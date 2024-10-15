@@ -2,71 +2,75 @@ import { TextInput, View, Text, StyleSheet, ImageBackground, TouchableOpacity} f
 import React, { useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import { Picker } from '@react-native-picker/picker'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
+import { Alert } from "react-native";
+
 export default function LogIn(){
     const router = useRouter();
-    const [name, setName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [cedula, setCedula] = useState('');
     const [correo, setCorreo] = useState('');
-    const [selectedOption, setSelectedOption] = useState();
-    const [dineroInicial, setDineroInicial] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handlePress = (action) => {
-        if(action === 'registro'){
-            router.push('/registro/Registro');
+    const handleLogin = async () => {
+        try {
+            // para probar desde el expo go se usa el ipv4 local en las routes
+            // const response = await axios.post('http://192.168.100.29:3001/users/login', {
+            // desde la web se usa localhost en las routes
+
+            const response = await axios.post('http://localhost:3001/users/login', {
+                email: correo,
+                password: password
+            });
+    
+            if (response.status === 200) {
+                console.log("Login existoso")
+                const { userID, IsAdmin } = response.data;
+    
+                // Guardar el ID del usuario en AsyncStorage para saber cual es usuario activo
+                // Para accederlo se hace un const userID = AsyncStorage.getItem('userID');
+                await AsyncStorage.setItem('userID', userID.toString());
+    
+            } else {
+                Alert.alert('Error', 'Credenciales incorrectas');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'El usuario ingresado no existe');
+            console.error(error);
         }
     };
+    
 
-
-    return(
+    return (
         <View style={{flex: 1}}>
-            <Stack.Screen
-                options={{
-                    headerShown: false, 
-                }}
-            >
-            </Stack.Screen>
-            <ImageBackground 
-                source={require('../../assets/background.png')}
-                style={styles.background}
-            >
+            <Stack.Screen options={{ headerShown: false }} />
+            <ImageBackground source={require('../../assets/background.png')} style={styles.background}>
                 <View style={styles.container}>
-                    <Text
-                        style={styles.titleText}
-                    >
-                        Iniciar Sesión
-                    </Text>
+                    <Text style={styles.titleText}>Iniciar Sesión</Text>
                     <View>
                         <TextInput
-                            style={styles.Items} 
+                            style={styles.Items}
                             placeholder="Correo"
                             value={correo}
                             onChangeText={setCorreo}
                         />
                         <TextInput
-                            style={styles.Items} 
+                            style={styles.Items}
                             placeholder="Contraseña"
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry={true}
                         />
                     </View>
-                    <TouchableOpacity
-                        style={styles.Button}
-                    >
+                    <TouchableOpacity style={styles.Button} onPress={handleLogin}>
                         <Text style={styles.buttonText}>Iniciar Sesión</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handlePress('registro')}
-                        >
+                    <TouchableOpacity onPress={() => router.push('/registro/Registro')}>
                         <Text style={styles.text}>¿No tienes cuenta? Regístrate</Text>
                     </TouchableOpacity>
                 </View>
             </ImageBackground>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

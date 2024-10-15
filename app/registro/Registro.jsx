@@ -1,20 +1,60 @@
 import { TextInput, View, Text, StyleSheet, ImageBackground, TouchableOpacity} from "react-native";
 import React, { useState } from "react";
-import { Stack } from "expo-router";
-import { Picker } from '@react-native-picker/picker'; 
+import { Stack, useRouter } from "expo-router";
+import { Picker } from '@react-native-picker/picker';
+import axios from "axios";
+import { Alert } from "react-native";
+
 export default function Registro(){
+    
+    const router = useRouter()
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [cedula, setCedula] = useState('');
     const [correo, setCorreo] = useState('');
     const [selectedOption, setSelectedOption] = useState();
     const [dineroInicial, setDineroInicial] = useState('');
+    const [telefono, setTelefono] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
     const handlePress = (action) => {
         if(action === 'login'){
             router.push('/login/LogIn');
+        }
+    };
+
+    const handleRegister = async () => {
+        try {
+
+            if(password != confirmPassword){
+                Alert.alert('Error', 'Las contraseñas no coinciden');
+                return;
+            }
+
+            if (!correo.includes("@estudiantec.cr")) {
+                Alert.alert("Error", "El correo no corresponde al dominio estudiantec.cr");
+                return; 
+            }
+
+            const response = await axios.post('http://localhost:3001/users', {
+                nombre: name,
+                apellidos: lastName,
+                cedula: cedula,
+                email: correo,
+                area: selectedOption,
+                dinero: dineroInicial,
+                telefono: telefono,
+                contrasena: password
+            });
+        
+            console.log("registro existoso")
+            router.push('/login/LogIn');
+
+            
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un problema al registrar el usuario');
+            console.error(error);
         }
     };
 
@@ -61,27 +101,32 @@ export default function Registro(){
                             value={correo}
                             onChangeText={setCorreo}
                         />
-                        <View
-                            style={styles.Picker}
-                        >
+                        <View style={styles.Picker}>
                             <Picker
                                 style={styles.Item}
                                 mode={"dropdown"}
                                 selectedValue={selectedOption}
-                                onChangeText={(itemValue) => setSelectedOption(itemValue)}
+                                onValueChange={(itemValue) => setSelectedOption(itemValue)} // Cambiado de onChangeText a onValueChange
                             >
                                 <Picker.Item label="Área de trabajo" value=""/>
-                                <Picker.Item label="Tecnología" value="tecnologia"/>
+                                <Picker.Item label="Tecnología" value="tecnología"/>
                                 <Picker.Item label="Arte" value="arte"/>
                                 <Picker.Item label="Entretenimiento" value="entretenimiento"/>
-                                <Picker.Item label="Investigación" value="investigacion"/>
+                                <Picker.Item label="Investigación" value="investigación"/>
                             </Picker>
                         </View>
+
                         <TextInput
                             style={styles.Items} 
                             placeholder="Dinero inicial"
                             value={dineroInicial}
                             onChangeText={setDineroInicial}
+                        />
+                        <TextInput
+                            style={styles.Items} 
+                            placeholder="Teléfono"
+                            value={telefono}
+                            onChangeText={setTelefono}
                         />
                         <TextInput
                             style={styles.Items} 
@@ -100,6 +145,7 @@ export default function Registro(){
                     </View>
                     <TouchableOpacity
                         style={styles.Button}
+                        onPress={handleRegister}
                     >
                         <Text style={styles.buttonText}>Registrarse</Text>
                     </TouchableOpacity>

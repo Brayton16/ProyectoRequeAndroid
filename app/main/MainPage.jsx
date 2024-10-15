@@ -5,6 +5,7 @@ import * as Font from 'expo-font';
 import { useFonts } from 'expo-font';
 import { createNativeWrapper } from 'react-native-gesture-handler';
 
+
 const MainPage = () => {
     const router = useRouter()
 
