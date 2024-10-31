@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {getProyects, getProyect, createProyect, updateProyect, deleteProyect, getProyectsByCategory, getProyectsByLimitDate, getProyectsByFundingGoal, getProyectsByCollection, activeProjectsCount, getActiveProjectRatings, makeProjectRating, updateRating, answerProjectRating, updateCommentRating, deactivateProjectRating}  from "../models/projects.models.js";
+import {getProyects, getProyect, createProyect, updateProyect, deleteProyect, getProyectsByCategory, getProyectsByLimitDate, getProyectsByFundingGoal, getProyectsByCollection, activeProjectsCount, getActiveProjectRatings, makeProjectRating, updateRating, answerProjectRating, updateCommentRating, deactivateProjectRating, getAverageRatingProject}  from "../models/projects.models.js";
 
 const router = Router();
 
@@ -27,6 +27,7 @@ router.put("/proyectos/ratings/rating", updateRating);
 router.post("/proyectos/ratings/answer", answerProjectRating);
 router.put("/proyectos/ratings/comment", updateCommentRating);
 router.delete("/proyectos/ratings", deactivateProjectRating);
+router.get("/proyectos/ratings/average", getAverageRatingProject);
 
 
 export default router;

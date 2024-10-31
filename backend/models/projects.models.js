@@ -391,3 +391,26 @@ export const deactivateProjectRating = async (req, res) =>{
         res.send(error.message);
     }
 };
+
+export const getAverageRatingProject = async (req, res) => {
+    const { projectID } = req.body; // Obtiene el parámetro de consulta de la URL
+    
+    // se verifica si algun campo requerido no se ingreso
+    if (
+        projectID == null
+    ){ 
+        return res.status(400).json({ msg: "Error: Informacion incompleta" });
+    }
+
+    try {
+
+        const pool = await getConnection(); // Asumiendo que esta es tu función para obtener conexión a la base de datos
+        const result = await pool.request()
+            .input("ProjectID", sql.Int, projectID)
+            .execute('GetAverageRatingProject');
+        res.json(result.recordset); // Envía los datos como JSON
+    } catch (error) {
+        res.status(500).send(error.message); // Maneja errores
+    }
+};
+
