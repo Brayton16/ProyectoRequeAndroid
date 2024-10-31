@@ -8,7 +8,7 @@ const adminEmail = "stsequeira@estudiantec.cr";
 const appName = "FundMePls" 
 const apiInstance = new brevo.TransactionalEmailsApi();
 apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
-  
+
 export const sendRegisterEmail = async (user) => {
 
     try { 
@@ -191,10 +191,40 @@ export const sendSuspiciousDonation = async (info) => {
                     <h2>Información sobre el propietario del proyecto. <br> </h2>
                     <b>Nombre: </b> ${info.ownerFirstName}.<br>
                     <b>Correo electrónico: </b> ${info.ownerEmail}.<br>.<br>
-
+ 
                     Visita nuestra web ante cualquier duda.
                 </p>
                 <a href='https://www.tu-plataforma.com'>Visita nuestra web</a>
+            </body>
+        </html>`;
+        sendSmtpEmail.sender = {
+        name: "FundMePls",
+        email: "stevn11progamer@gmail.com",
+        };
+
+        const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log("Email enviado: ", result);
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const sendNearbyProjects = async (projectList) => {
+    try { 
+        const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+        sendSmtpEmail.subject = "Resúmen diario de proyectos cercanos a finalizar!";
+        sendSmtpEmail.to = [
+        { email: adminEmail, name: adminName},
+        ];
+        sendSmtpEmail.htmlContent = `
+        <html>
+            <body>
+                <h1>Alerta</h1>
+                ${projectList}
+                <br>
+                <a href='https://www.tu-plataforma.com'>Visita nuestra web para más detalles</a>
             </body>
         </html>`;
         sendSmtpEmail.sender = {
@@ -217,5 +247,6 @@ export default {
     sendDonationEmail,
     sendRegisterProyect,
     sendUpdateProyect,
-    sendSuspiciousDonation
+    sendSuspiciousDonation,
+    sendNearbyProjects
   };

@@ -1,6 +1,7 @@
 import {getConnection} from '../database/connection.js';
 import emailService from "../services/emailService.js";
 import sql from 'mssql';
+import cron from 'node-cron';
 
 
 
@@ -119,11 +120,11 @@ export const createProyect = async (req, res) => {
         let firstName = result.output.FirstName;
         let email = result.output.Email;
 
-        // Enviar correo de registro de proyecto
+        // Enviar correo de registro de project
         await emailService.sendRegisterProyect({ titulo, email, firstName });
 
         return res.status(201).json({
-            message: "Proyecto registrado exitosamente.",
+            message: "project registrado exitosamente.",
             firstName,
             email,
             titulo
@@ -163,11 +164,11 @@ export const updateProyect = async (req, res) =>{
         let firstName  = result.output.FirstName;
         let email = result.output.Email;
 
-        // envia correo de registro de proyecto
+        // envia correo de registro de project
         await emailService.sendUpdateProyect({ProjectName, email, firstName});
             
         return res.status(201).json({
-            message: "Proyecto modificado exitosamente.",
+            message: "project modificado exitosamente.",
             firstName,
             email, 
             ProjectName
@@ -197,10 +198,10 @@ export const deleteProyect = async (req, res) =>{
         .execute('DeactivateProject')
 
         if(result.rowsAffected[0] === 0){
-            return res.status(404).json({message: "Proyecto no encontrado"});
+            return res.status(404).json({message: "project no encontrado"});
         }
 
-        return res.json({message: "Proyecto eliminado correctamente"});
+        return res.json({message: "project eliminado correctamente"});
     }
     catch(error){        
         res.status(500);
@@ -273,7 +274,7 @@ export const makeProjectRating = async (req, res) => {
         let lastName = result.output.LastName
 
         return res.status(201).json({
-            message: "Proyecto calificado exitosamente.",
+            message: "project calificado exitosamente.",
             firstName,
             lastName
         });
@@ -302,7 +303,7 @@ export const updateRating = async (req, res) => {
             .execute('UpdateRating');
 
         return res.status(201).json({
-            message: "Calificacion de proyecto modificada."
+            message: "Calificacion de project modificada."
         });
     } catch (error) {
         res.status(500).send(error.message); // Enviar mensaje de error
@@ -356,7 +357,7 @@ export const updateCommentRating = async (req, res) => {
             .execute('UpdateCommentRating');
 
         return res.status(201).json({
-            message: "Comentario del proyecto actualizado."
+            message: "Comentario del project actualizado."
         });
     } catch (error) {
         res.status(500).send(error.message); // Enviar mensaje de error
@@ -381,10 +382,10 @@ export const deactivateProjectRating = async (req, res) =>{
         .execute('deactivateProjectRating')
 
         if(result.rowsAffected[0] === 0){
-            return res.status(404).json({message: "Rating del Proyecto no encontrado"});
+            return res.status(404).json({message: "Rating del project no encontrado"});
         }
 
-        return res.json({message: "Rating del Proyecto eliminada correctamente"});
+        return res.json({message: "Rating del project eliminada correctamente"});
     }
     catch(error){        
         res.status(500);
@@ -414,3 +415,75 @@ export const getAverageRatingProject = async (req, res) => {
     }
 };
 
+export const checkNearbyProjects = async () => {
+    try {
+        const pool = await getConnection(); // Asumiendo que esta es tu función para obtener conexión a la base de datos
+        const result = await pool.query(`
+            SELECT 
+                p.ProjectName,  
+                p.CurrentCollection,
+                p.FundingGoal,
+                p.FundingDeadline,
+                u.Email AS OwnerEmail, 
+                u.FirstName AS OwnerFirstName,
+                u.LastName AS OwnerLastName
+            FROM 
+                Projects p
+            JOIN 
+                Users u ON p.OwnerID = u.UserID
+            WHERE 
+                p.FundingDeadline BETWEEN GETDATE() AND DATEADD(day, 1000, GETDATE())
+                AND p.CurrentCollection < p.FundingGoal;
+        `);
+
+        // Verifica si result y recordset están definidos
+        if (result && result.recordset && result.recordset.length > 0) {
+            let projectList = `
+                <h2>Proyectos en Riesgo</h2>
+                <p>Los siguientes proyectos están próximos a su fecha límite sin alcanzar su objetivo de financiación:</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;">Proyecto</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;">Monto Recolectado</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;">Monto Objetivo</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;">Fecha Límite</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;">Propietario</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;">Correo del Propietario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${result.recordset.map(project => `
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${project.ProjectName}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${project.CurrentCollection}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${project.FundingGoal}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${new Date(project.FundingDeadline).toLocaleDateString()}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${project.OwnerFirstName} ${project.OwnerLastName}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${project.OwnerEmail}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            await emailService.sendNearbyProjects(projectList);
+            console.log("Correo enviado con la lista de proyectos en riesgo."); // Agrega un log para confirmar el envío
+        } else {
+            console.log("No hay proyectos cercanos a su fecha límite que no hayan cumplido su objetivo");
+        }
+
+    } catch (error) {
+        console.error("Error en checkNearbyProjects:", error); // Mensaje de error más informativo
+        throw error; // Re-lanza el error si es necesario
+    }
+};
+
+// Programar la tarea para ejecutarse diariamente a las 11:59 PM
+cron.schedule('59 23 * * *', async () => {
+    console.log("Ejecutando tarea de verificación de proyectos cercanos...");
+    try {
+        await checkNearbyProjects(); // Llamar a la función sin req y res
+    } catch (error) {
+        console.error("Error al verificar proyectos cercanos:", error);
+    }
+});
