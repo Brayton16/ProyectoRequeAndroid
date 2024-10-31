@@ -3,6 +3,8 @@ import brevo from "@getbrevo/brevo";;
 //const apiKey = process.env.BREVO_API_KEY;
 // EL SERVICIO NO TIENE BIEN LA VARIABLES DE ENTORNO, PERO SI SIRVE SI SE LE COLOCA EL API KEY DIRECTO
 
+const adminName = "Steven";
+const adminEmail = "stsequeira@estudiantec.cr";
 const appName = "FundMePls" 
 const apiInstance = new brevo.TransactionalEmailsApi();
 apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
@@ -167,6 +169,46 @@ export const sendUpdateProyect = async (infoProyect) => {
     }
 };
 
+export const sendSuspiciousDonation = async (info) => {
+    try { 
+        const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+        sendSmtpEmail.subject = "Se ha detectado una donación sospechosa!";
+        sendSmtpEmail.to = [
+        { email: adminEmail, name: adminName},
+        ];
+        sendSmtpEmail.htmlContent = `
+        <html>
+            <body>
+                <h1>Alerta</h1>
+                <p>
+                    El proyecto <b> ${info.ownerProjectName} </b> ha recibido una donación muy grande de ${info.amount} GoofyCoins.<br><br>
+                    <h2>Información sobre el donador. <br> </h2>
+                    <b>Nombre: </b> ${info.donorFirstName} ${info.donorLastName}.<br>
+                    <b>Correo electrónico: </b> ${info.donorEmail}.<br>
+                    <b>Teléfono: </b> ${info.donorPhoneNumber}.<br><br> 
+
+                    <h2>Información sobre el propietario del proyecto. <br> </h2>
+                    <b>Nombre: </b> ${info.ownerFirstName}.<br>
+                    <b>Correo electrónico: </b> ${info.ownerEmail}.<br>.<br>
+
+                    Visita nuestra web ante cualquier duda.
+                </p>
+                <a href='https://www.tu-plataforma.com'>Visita nuestra web</a>
+            </body>
+        </html>`;
+        sendSmtpEmail.sender = {
+        name: "FundMePls",
+        email: "stevn11progamer@gmail.com",
+        };
+
+        const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log("Email enviado: ", result);
+
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 // Exportar la función
 export default {
@@ -174,5 +216,6 @@ export default {
     sendGratitudeEmail,
     sendDonationEmail,
     sendRegisterProyect,
-    sendUpdateProyect
+    sendUpdateProyect,
+    sendSuspiciousDonation
   };

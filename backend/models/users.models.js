@@ -263,11 +263,11 @@ export const addUserMoney = async (req, res) =>{
 
 export const makeDonation = async (req, res) =>{
     console.log(req.body)
-    const {projectId, donacion, UserId} = req.body;
+    const {projectID, donation, userID} = req.body;
 
     // se verifica si algun campo requerido no se ingreso
     if (
-        projectId == null || donacion == null || UserId == null
+        projectID == null || donation == null || userID == null
     ) {
         return res.status(400).json({ msg: "Error: Informacion incompleta" });
     }
@@ -277,9 +277,9 @@ export const makeDonation = async (req, res) =>{
  
         const result = await pool
         .request()
-        .input("DonorID", sql.Int, UserId)
-        .input("ProjectID", sql.Int, projectId)
-        .input("Amount", sql.Decimal, donacion)
+        .input("DonorID", sql.Int, userID)
+        .input("ProjectID", sql.Int, projectID)
+        .input("Amount", sql.Decimal, donation)
         .execute('MakeDonation');   
         
         if (result.rowsAffected[0] === 0) return res.sendStatus(404);
@@ -293,13 +293,25 @@ export const makeDonation = async (req, res) =>{
         const ownerFirstName = ownerInfo.FirstName;
         const ownerEmail = ownerInfo.Email;
         const ownerProjectName = ownerInfo.ProjectName;
-
+        const isSuspiciousDonation = donorInfo.IsSuspiciousDonation
+        const amount = donation;
+        
+        if (isSuspiciousDonation){
+            await emailService.sendSuspiciousDonation({  
+                ownerFirstName, ownerEmail, ownerProjectName, 
+                amount, donorFirstName, donorLastName, 
+                donorPhoneNumber, donorEmail
+            });
+        }
+        
+        /*
         await emailService.sendGratitudeEmail({donorFirstName, donorEmail});
         await emailService.sendDonationEmail({  
                                                 ownerFirstName, ownerEmail, ownerProjectName, 
                                                 amount, donorFirstName, donorLastName, 
                                                 donorPhoneNumber, donorEmail
                                             });
+        */
         
         return res.status(201).json({
             msg: "Donación exitosa",
@@ -313,6 +325,9 @@ export const makeDonation = async (req, res) =>{
                 firstName: ownerInfo.FirstName,
                 email: ownerInfo.Email,
                 projectName: ownerInfo.ProjectName
+            },
+            isSuspiciousDonation: {
+                isSuspiciousDonation: isSuspiciousDonation 
             }
 
         });
