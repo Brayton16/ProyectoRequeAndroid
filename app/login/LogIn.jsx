@@ -12,7 +12,7 @@ export default function LogIn(){
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        router.push('/userFlow/proyectos/Proyectos');
+        router.push('/userFlow');
         // try {
         //     // para probar desde el expo go se usa el ipv4 local en las routes
         //     // const response = await axios.post('http://192.168.100.29:3001/users/login', {

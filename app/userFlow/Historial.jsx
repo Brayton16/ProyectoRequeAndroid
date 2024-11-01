@@ -1,12 +1,15 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Stack } from "expo-router";
-
-export default function MisProyectos() {
+import NavBarDisplay from '../../components/navbarDisplay';
+export default function Historial() {
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
-            <Text style={styles.title}>Proyectos</Text>
-            <Text style={styles.text}>Bienvenido a la pantalla de Mis Proyectos.</Text>
+            <View style={styles.contentContainer}>
+                <NavBarDisplay/>
+                <Text style={styles.title}>Historial</Text>
+                <Text style={styles.text}>Bienvenido a la pantalla de Historial.</Text>
+            </View>
         </View>
     );
 }
@@ -14,18 +17,22 @@ export default function MisProyectos() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    contentContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#ffffff',
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold',
+        fontFamily: 'SpaceGrotesk',
         marginBottom: 20,
         color: '#04233B',
     },
     text: {
         fontSize: 16,
+        fontFamily: 'SpaceGrotesk',
         color: 'black',
     },
 });

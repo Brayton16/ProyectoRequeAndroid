@@ -1,17 +1,14 @@
-// userFlow/proyectos/Proyectos.jsx
-
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Stack } from "expo-router";
-import NavContainer from '../../../components/navbarDisplay';
-export default function Proyectos() {
+import NavBarDisplay from '../../components/navbarDisplay';
+export default function MisProyectos() {
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
             <View style={styles.contentContainer}>
-                <NavContainer/>
-                <Text style={styles.title}>Proyectos</Text>
-                <Text style={styles.text}>Bienvenido a la pantalla de Perfil.</Text>
+                <NavBarDisplay/>
+                <Text style={styles.title}>Mis Proyectos</Text>
+                <Text style={styles.text}>Bienvenido a la pantalla de Mis Proyectos.</Text>
             </View>
         </View>
     );
@@ -25,16 +22,17 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#ffffff',
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold',
+        fontFamily: 'SpaceGrotesk',
         marginBottom: 20,
         color: '#04233B',
     },
     text: {
         fontSize: 16,
+        fontFamily: 'SpaceGrotesk',
         color: 'black',
     },
 });

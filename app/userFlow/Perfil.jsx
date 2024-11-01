@@ -1,12 +1,15 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Stack } from "expo-router";
-
-export default function Foro() {
+import NavBarDisplay from '../../components/navbarDisplay';
+export default function Perfil() {
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
-            <Text style={styles.title}>Proyectos</Text>
-            <Text style={styles.text}>Bienvenido a la pantalla de Foro.</Text>
+            <View style={styles.contentContainer}>
+                <NavBarDisplay/>
+                <Text style={styles.title}>Perfil</Text>
+                <Text style={styles.text}>Bienvenido a la pantalla de Perfil.</Text>
+            </View>
         </View>
     );
 }
@@ -14,18 +17,22 @@ export default function Foro() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    contentContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#ffffff',
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold',
+        fontFamily: 'SpaceGrotesk',
         marginBottom: 20,
         color: '#04233B',
     },
     text: {
         fontSize: 16,
+        fontFamily: 'SpaceGrotesk',
         color: 'black',
     },
 });
