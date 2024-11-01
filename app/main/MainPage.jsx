@@ -4,12 +4,14 @@ import { Stack, useRouter } from 'expo-router';
 import * as Font from 'expo-font';
 import { useFonts } from 'expo-font';
 import { createNativeWrapper } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const MainPage = () => {
     const router = useRouter()
 
-    const handlePress = (action) => {
+    const handlePress = async (action) => {
+        await AsyncStorage.setItem('API_URL', "http://192.168.100.29:3001");
         if(action === 'registro'){
             router.push('/registro/Registro');
         } else if(action === 'inicio'){
