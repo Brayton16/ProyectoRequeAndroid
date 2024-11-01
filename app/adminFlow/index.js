@@ -4,9 +4,9 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import Proyectos from './Proyectos';
 import Perfil from './Perfil';
-import MisProyectos from './MisProyectos';
+import GestorUsuarios from './GestorUsuarios';
 import Foro from './Foro';
-import Historial from './Historial';
+import Estadisticas from './Estadisticas';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -51,7 +51,7 @@ export default function UserFlow() {
         }}
       >
         <Drawer.Screen 
-            name="Descubrir Proyectos" 
+            name="Proyectos" 
             component={Proyectos} 
             options={{
                 backgroundColor: '#1C7690',
@@ -61,21 +61,21 @@ export default function UserFlow() {
             }}
         />
         <Drawer.Screen 
-            name="Mis Proyectos"
-            component={MisProyectos} 
+            name="Gestor de Usuarios"
+            component={GestorUsuarios}  
             options={{
                 backgroundColor: '#1C7690',
                 drawerIcon: () =>(
-                    <Feather name='activity' size={24} color="#F75657"/>
+                    <Feather name='users' size={24} color="#F75657"/>
                 )
             }}
         />
         <Drawer.Screen 
-            name="Historial" 
-            component={Historial} 
+            name="Estadísticas" 
+            component={Estadisticas} 
             options={{
                 drawerIcon: () =>(
-                    <Feather name='clock' size={24} color="#F75657"/>
+                    <Feather name='trending-up' size={24} color="#F75657"/>
                 )
             }}
         />
