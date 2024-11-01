@@ -1,12 +1,14 @@
 import { TextInput, View, Text, StyleSheet, ImageBackground, TouchableOpacity} from "react-native";
 import React, { useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { Picker } from '@react-native-picker/picker'; 
 export default function Registro(){
+    const router = useRouter();
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [cedula, setCedula] = useState('');
     const [correo, setCorreo] = useState('');
+    const [telefono, setTelefono] = useState('');
     const [selectedOption, setSelectedOption] = useState();
     const [dineroInicial, setDineroInicial] = useState('');
     const [password, setPassword] = useState('');
@@ -57,6 +59,12 @@ export default function Registro(){
                         />
                         <TextInput
                             style={styles.Items} 
+                            placeholder="Número de teléfono"
+                            value={telefono}
+                            onChangeText={setTelefono}
+                        />
+                        <TextInput
+                            style={styles.Items} 
                             placeholder="Correo"
                             value={correo}
                             onChangeText={setCorreo}
@@ -100,6 +108,7 @@ export default function Registro(){
                     </View>
                     <TouchableOpacity
                         style={styles.Button}
+                        onPress={() => handlePress('login')}
                     >
                         <Text style={styles.buttonText}>Registrarse</Text>
                     </TouchableOpacity>
@@ -191,7 +200,7 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 20,  
         borderBottomRightRadius: 20,
         marginBottom: 20,
-        marginTop: 50
+        marginTop: 30
     },
     buttonText: {
         color: 'white',
@@ -209,7 +218,7 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 30,
         fontFamily: 'SpaceGrotesk',
-        marginBottom: 40
+        marginBottom: 20
     }
 })
 

@@ -19,6 +19,9 @@ export default function LogIn(){
         }
     };
 
+    const verificarLogin = () => {
+        
+    }
 
     return(
         <View style={{flex: 1}}>
@@ -55,6 +58,7 @@ export default function LogIn(){
                     </View>
                     <TouchableOpacity
                         style={styles.Button}
+                        onPress={verificarLogin}
                     >
                         <Text style={styles.buttonText}>Iniciar Sesión</Text>
                     </TouchableOpacity>
