@@ -1,9 +1,10 @@
-import { TextInput, View, Text, StyleSheet, ImageBackground, TouchableOpacity} from "react-native";
+import { TextInput, View, Text, StyleSheet, ImageBackground, TouchableOpacity, KeyboardAvoidingView} from "react-native";
 import React, { useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import { Picker } from '@react-native-picker/picker';
 import axios from "axios";
 import { Alert } from "react-native";
+
 
 export default function Registro(){
     
@@ -70,97 +71,103 @@ export default function Registro(){
                 source={require('../../assets/background.png')}
                 style={styles.background}
             >
-                <View style={styles.container}>
-                    <Text
-                        style={styles.titleText}
-                    >
-                        Registrarse
-                    </Text>
-                    <View>
-                        <TextInput   
-                            style={styles.Items} 
-                            placeholder="Nombre"
-                            value={name}
-                            onChangeText={setName}
-                        />
-                        <TextInput
-                            style={styles.Items} 
-                            placeholder="Apellidos"
-                            value={lastName}
-                            onChangeText={setLastName}
-                        />
-                        <TextInput
-                            style={styles.Items} 
-                            placeholder="Cédula"
-                            value={cedula}
-                            onChangeText={setCedula}
-                        />
-                        <TextInput
-                            style={styles.Items} 
-                            placeholder="Número de teléfono"
-                            value={telefono}
-                            onChangeText={setTelefono}
-                        />
-                        <TextInput
-                            style={styles.Items} 
-                            placeholder="Correo"
-                            value={correo}
-                            onChangeText={setCorreo}
-                        />
-                        <View style={styles.Picker}>
-                            <Picker
-                                style={styles.Item}
-                                mode={"dropdown"}
-                                selectedValue={selectedOption}
-                                onValueChange={(itemValue) => setSelectedOption(itemValue)} // Cambiado de onChangeText a onValueChange
-                            >
-                                <Picker.Item label="Área de trabajo" value=""/>
-                                <Picker.Item label="Tecnología" value="tecnología"/>
-                                <Picker.Item label="Arte" value="arte"/>
-                                <Picker.Item label="Entretenimiento" value="entretenimiento"/>
-                                <Picker.Item label="Investigación" value="investigación"/>
-                            </Picker>
-                        </View>
-
-                        <TextInput
-                            style={styles.Items} 
-                            placeholder="Dinero inicial"
-                            value={dineroInicial}
-                            onChangeText={setDineroInicial}
-                        />
-                        <TextInput
-                            style={styles.Items} 
-                            placeholder="Teléfono"
-                            value={telefono}
-                            onChangeText={setTelefono}
-                        />
-                        <TextInput
-                            style={styles.Items} 
-                            placeholder="Contraseña"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry={true}
-                        />
-                        <TextInput
-                            style={styles.Items} 
-                            placeholder="Confirmar contraseña"
-                            value={confirmPassword}
-                            onChangeText={setConfirmPassword}
-                            secureTextEntry={true}
-                        />
-                    </View>
-                    <TouchableOpacity
-                        style={styles.Button}
-                        onPress={handleRegister}
-                    >
-                        <Text style={styles.buttonText}>Registrarse</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handlePress('login')}
+                <KeyboardAvoidingView
+                    style={styles.containerWrapper}
+                    behavior="height"
+                    keyboardVerticalOffset={30}
+                > 
+                    <View style={styles.container}>
+                        <Text
+                            style={styles.titleText}
                         >
-                        <Text style={styles.text}>¿Ya tienes cuenta? Inicia sesión</Text>
-                    </TouchableOpacity>
-                </View>
+                            Registrarse
+                        </Text>
+                        <View>
+                            <TextInput   
+                                style={styles.Items} 
+                                placeholder="Nombre"
+                                value={name}
+                                onChangeText={setName}
+                            />
+                            <TextInput
+                                style={styles.Items} 
+                                placeholder="Apellidos"
+                                value={lastName}
+                                onChangeText={setLastName}
+                            />
+                            <TextInput
+                                style={styles.Items} 
+                                placeholder="Cédula"
+                                value={cedula}
+                                onChangeText={setCedula}
+                            />
+                            <TextInput
+                                style={styles.Items} 
+                                placeholder="Número de teléfono"
+                                value={telefono}
+                                onChangeText={setTelefono}
+                            />
+                            <TextInput
+                                style={styles.Items} 
+                                placeholder="Correo"
+                                value={correo}
+                                onChangeText={setCorreo}
+                            />
+                            <View style={styles.Picker}>
+                                <Picker
+                                    style={styles.Item}
+                                    mode={"dropdown"}
+                                    selectedValue={selectedOption}
+                                    onValueChange={(itemValue) => setSelectedOption(itemValue)} // Cambiado de onChangeText a onValueChange
+                                >
+                                    <Picker.Item label="Área de trabajo" value=""/>
+                                    <Picker.Item label="Tecnología" value="tecnología"/>
+                                    <Picker.Item label="Arte" value="arte"/>
+                                    <Picker.Item label="Entretenimiento" value="entretenimiento"/>
+                                    <Picker.Item label="Investigación" value="investigación"/>
+                                </Picker>
+                            </View>
+
+                            <TextInput
+                                style={styles.Items} 
+                                placeholder="Dinero inicial"
+                                value={dineroInicial}
+                                onChangeText={setDineroInicial}
+                            />
+                            <TextInput
+                                style={styles.Items} 
+                                placeholder="Teléfono"
+                                value={telefono}
+                                onChangeText={setTelefono}
+                            />
+                            <TextInput
+                                style={styles.Items} 
+                                placeholder="Contraseña"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={true}
+                            />
+                            <TextInput
+                                style={styles.Items} 
+                                placeholder="Confirmar contraseña"
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                secureTextEntry={true}
+                            />
+                        </View>
+                        <TouchableOpacity
+                            style={styles.Button}
+                            onPress={handleRegister}
+                        >
+                            <Text style={styles.buttonText}>Registrarse</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => handlePress('login')}
+                            >
+                            <Text style={styles.text}>¿Ya tienes cuenta? Inicia sesión</Text>
+                        </TouchableOpacity>
+                    </View>
+                </KeyboardAvoidingView>    
             </ImageBackground>
         </View>
     )
@@ -170,9 +177,12 @@ const styles = StyleSheet.create({
     background: {
         flex: 1,
     },
+    containerWrapper: {
+        flex: 1,
+    },
     container: {
         width: 'auto',
-        height: 730,
+        height: 800,
         backgroundColor: 'white',
         borderWidth: 1,
         borderColor: 'black',
@@ -180,7 +190,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderTopLeftRadius: 120,
-        marginTop: 150,
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        left: 0,
     },
     containerText: {
         fontFamily: 'SpaceGrotesk',
@@ -255,7 +268,8 @@ const styles = StyleSheet.create({
     text: {
         color: 'black',
         fontSize: 18,
-        fontFamily: 'SpaceGrotesk'
+        fontFamily: 'SpaceGrotesk',
+        marginBottom: 20,
     },
     titleText:{
         color: 'black',

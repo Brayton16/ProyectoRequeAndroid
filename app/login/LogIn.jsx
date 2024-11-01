@@ -1,4 +1,4 @@
-import { TextInput, View, Text, StyleSheet, ImageBackground, TouchableOpacity} from "react-native";
+import { TextInput, View, Text, StyleSheet, ImageBackground, TouchableOpacity, KeyboardAvoidingView} from "react-native";
 import React, { useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import { Picker } from '@react-native-picker/picker'; 
@@ -12,31 +12,32 @@ export default function LogIn(){
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        try {
-            // para probar desde el expo go se usa el ipv4 local en las routes
-            // const response = await axios.post('http://192.168.100.29:3001/users/login', {
-            // desde la web se usa localhost en las routes
+        router.push('/userFlow/proyectos/Proyectos');
+        // try {
+        //     // para probar desde el expo go se usa el ipv4 local en las routes
+        //     // const response = await axios.post('http://192.168.100.29:3001/users/login', {
+        //     // desde la web se usa localhost en las routes
 
-            const response = await axios.post('http://localhost:3001/users/login', {
-                email: correo,
-                password: password
-            });
+        //     const response = await axios.post('http://localhost:3001/users/login', {
+        //         email: correo,
+        //         password: password
+        //     });
     
-            if (response.status === 200) {
-                console.log("Login existoso")
-                const { userID, IsAdmin } = response.data;
+        //     if (response.status === 200) {
+        //         console.log("Login existoso")
+        //         const { userID, IsAdmin } = response.data;
     
-                // Guardar el ID del usuario en AsyncStorage para saber cual es usuario activo
-                // Para accederlo se hace un const userID = AsyncStorage.getItem('userID');
-                await AsyncStorage.setItem('userID', userID.toString());
+        //         // Guardar el ID del usuario en AsyncStorage para saber cual es usuario activo
+        //         // Para accederlo se hace un const userID = AsyncStorage.getItem('userID');
+        //         await AsyncStorage.setItem('userID', userID.toString());
     
-            } else {
-                Alert.alert('Error', 'Credenciales incorrectas');
-            }
-        } catch (error) {
-            Alert.alert('Error', 'El usuario ingresado no existe');
-            console.error(error);
-        }
+        //     } else {
+        //         Alert.alert('Error', 'Credenciales incorrectas');
+        //     }
+        // } catch (error) {
+        //     Alert.alert('Error', 'El usuario ingresado no existe');
+        //     console.error(error);
+        // }
     };
     
 
@@ -44,30 +45,32 @@ export default function LogIn(){
         <View style={{flex: 1}}>
             <Stack.Screen options={{ headerShown: false }} />
             <ImageBackground source={require('../../assets/background.png')} style={styles.background}>
-                <View style={styles.container}>
-                    <Text style={styles.titleText}>Iniciar Sesión</Text>
-                    <View>
-                        <TextInput
-                            style={styles.Items}
-                            placeholder="Correo"
-                            value={correo}
-                            onChangeText={setCorreo}
-                        />
-                        <TextInput
-                            style={styles.Items}
-                            placeholder="Contraseña"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry={true}
-                        />
-                    </View>
-                    <TouchableOpacity style={styles.Button} onPress={handleLogin}>
-                        <Text style={styles.buttonText}>Iniciar Sesión</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => router.push('/registro/Registro')}>
-                        <Text style={styles.text}>¿No tienes cuenta? Regístrate</Text>
-                    </TouchableOpacity>
-                </View>
+                <KeyboardAvoidingView style={styles.containerWrapper} behavior="height" keyboardVerticalOffset={10}>    
+                    <View style={styles.container}>
+                        <Text style={styles.titleText}>Iniciar Sesión</Text>
+                        <View>
+                            <TextInput
+                                style={styles.Items}
+                                placeholder="Correo"
+                                value={correo}
+                                onChangeText={setCorreo}
+                            />
+                            <TextInput
+                                style={styles.Items}
+                                placeholder="Contraseña"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={true}
+                            />
+                        </View>
+                        <TouchableOpacity style={styles.Button} onPress={handleLogin}>
+                            <Text style={styles.buttonText}>Iniciar Sesión</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => router.push('/registro/Registro')}>
+                            <Text style={styles.text}>¿No tienes cuenta? Regístrate</Text>
+                        </TouchableOpacity>
+                    </View >
+                </KeyboardAvoidingView>
             </ImageBackground>
         </View>
     );
@@ -75,6 +78,9 @@ export default function LogIn(){
 
 const styles = StyleSheet.create({
     background: {
+        flex: 1,
+    },
+    containerWrapper: {
         flex: 1,
     },
     container: {
@@ -87,7 +93,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderTopLeftRadius: 120,
-        marginTop: 400,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
     },
     containerText: {
         fontFamily: 'SpaceGrotesk',
