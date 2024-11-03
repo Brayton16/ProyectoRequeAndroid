@@ -12,6 +12,7 @@ import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Text, Image, StyleSheet } from 'react-native';
 import { DrawerItemList } from '@react-navigation/drawer';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 const Drawer = createDrawerNavigator();
 
 function CustomDrawerContent(props) {
@@ -28,77 +29,79 @@ function CustomDrawerContent(props) {
 
 export default function UserFlow() {
   return (
-    <NavigationContainer independent={true} >
-      <Drawer.Navigator 
-        initialRouteName="Descubir Proyectos"
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={{
-            headerShown: false,
-            drawerStyle: {
-                backgroundColor: '#002A4E',
-            },
-            drawerLabelStyle: {
-                color: '#ffffff',
-                fontSize: 14,
-                fontFamily: 'SpaceGrotesk',
-            },
-            drawerItemStyle: {
-                backgroundColor: '#0B538A',
-                borderRadius: 500,
-                padding: 5,
-                marginBottom: 20,
-            },
-        }}
-      >
-        <Drawer.Screen 
-            name="Descubrir Proyectos" 
-            component={Proyectos} 
-            options={{
-                backgroundColor: '#1C7690',
-                drawerIcon: () =>(
-                    <Entypo name='open-book' size={24} color="#F75657"/>
-                )
-            }}
-        />
-        <Drawer.Screen 
-            name="Mis Proyectos"
-            component={MisProyectos} 
-            options={{
-                backgroundColor: '#1C7690',
-                drawerIcon: () =>(
-                    <Feather name='activity' size={24} color="#F75657"/>
-                )
-            }}
-        />
-        <Drawer.Screen 
-            name="Historial" 
-            component={Historial} 
-            options={{
-                drawerIcon: () =>(
-                    <Feather name='clock' size={24} color="#F75657"/>
-                )
-            }}
-        />
-        <Drawer.Screen
-            name="Perfil" 
-            component={Perfil} 
-            options={{
-                drawerIcon: () =>(
-                    <Feather name='user' size={24} color="#F75657"/>
-                )
-            }}
-        />
-        <Drawer.Screen 
-            name="Foro General" 
-            component={Foro} 
-            options={{
-                drawerIcon: () =>(
-                    <Ionicons name='earth-outline' size={24} color="#F75657"/>
-                )
-            }}
-        />
-      </Drawer.Navigator>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+        <NavigationContainer independent={true} >
+            <Drawer.Navigator 
+                initialRouteName="Descubir Proyectos"
+                drawerContent={(props) => <CustomDrawerContent {...props} />}
+                screenOptions={{
+                    headerShown: false,
+                    drawerStyle: {
+                        backgroundColor: '#002A4E',
+                    },
+                    drawerLabelStyle: {
+                        color: '#ffffff',
+                        fontSize: 14,
+                        fontFamily: 'SpaceGrotesk',
+                    },
+                    drawerItemStyle: {
+                        backgroundColor: '#0B538A',
+                        borderRadius: 500,
+                        padding: 5,
+                        marginBottom: 20,
+                    },
+                }}
+            >
+                <Drawer.Screen 
+                    name="Descubrir Proyectos" 
+                    component={Proyectos} 
+                    options={{
+                        backgroundColor: '#1C7690',
+                        drawerIcon: () =>(
+                            <Entypo name='open-book' size={24} color="#F75657"/>
+                        )
+                    }}
+                />
+                <Drawer.Screen 
+                    name="Mis Proyectos"
+                    component={MisProyectos} 
+                    options={{
+                        backgroundColor: '#1C7690',
+                        drawerIcon: () =>(
+                            <Feather name='activity' size={24} color="#F75657"/>
+                        )
+                    }}
+                />
+                <Drawer.Screen 
+                    name="Historial" 
+                    component={Historial} 
+                    options={{
+                        drawerIcon: () =>(
+                            <Feather name='clock' size={24} color="#F75657"/>
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name="Perfil" 
+                    component={Perfil} 
+                    options={{
+                        drawerIcon: () =>(
+                            <Feather name='user' size={24} color="#F75657"/>
+                        )
+                    }}
+                />
+                <Drawer.Screen 
+                    name="Foro General" 
+                    component={Foro} 
+                    options={{
+                        drawerIcon: () =>(
+                            <Ionicons name='earth-outline' size={24} color="#F75657"/>
+                        )
+                    }}
+                />
+            </Drawer.Navigator>
+        </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 

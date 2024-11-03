@@ -70,28 +70,79 @@ export default function Proyectos() {
         handleGetProjects();
     }, []);
 
+    const handleFilter = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos/categoria?query=${filter}`
+        try {
+            if(filter === ""){
+                const response = await axios.get(`${storedUrl}/proyectos`);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
             <View style={styles.contentContainer}>
                 <NavBarDisplay/>
                 <ScrollView style={{marginTop: 80, marginHorizontal: 30}} showsVerticalScrollIndicator={false}>
-                    <View style={styles.filterContainer}>
-                        <TouchableOpacity style={styles.filterButton}>
-                            <Text style={styles.filterButtonText}>Categoría</Text>
+                    <ScrollView horizontal={true} style={styles.UpperfilterContainer}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Tecnología")}>
+                            <Text style={styles.filterButtonText}>Tecnología</Text>
                         </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Salud")}>
+                            <Text style={styles.filterButtonText}>Salud</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Entretenimiento")}>
+                            <Text style={styles.filterButtonText}>Entretenimiento</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Educación")}>
+                            <Text style={styles.filterButtonText}>Educación</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Energía")}>
+                            <Text style={styles.filterButtonText}>Energía</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Arte")}>
+                            <Text style={styles.filterButtonText}>Arte</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Investigación")}>
+                            <Text style={styles.filterButtonText}>Investigación</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Cocina")}>
+                            <Text style={styles.filterButtonText}>Cocina</Text>
+                        </TouchableOpacity>                    
+                    </ScrollView>
+                    <View style={styles.filterContainer}>                    
                         <TouchableOpacity style={styles.filterButton}>
+                            <Text style={styles.filterButtonText} onPress={() => handleFilter("")}>General</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Recaudado")}>
                             <Text style={styles.filterButtonText}>Recaudado</Text>
                         </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Meta")}>
                             <Text style={styles.filterButtonText}>Meta</Text>
                         </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Limite")}>
                             <Text style={styles.filterButtonText}>Fecha límite</Text>
                         </TouchableOpacity>                    
                     </View>
                     <View style={styles.SearchBar}>
-                        <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} />
+                        <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} onPress={() => handleSearch(searchQuery)}/>
                         <TextInput
                             style={{fontFamily: 'SpaceGrotesk', paddingHorizontal: 5, flex: 1}}
                             placeholder="Buscar proyectos"
@@ -224,15 +275,20 @@ const styles = StyleSheet.create({
     },
     filterContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 10,
         marginTop: 10,
+    },
+    UpperfilterContainer: {
+        marginBottom: 10,
+        marginTop: 10,
+        marginHorizontal: 5,
     },
     filterButton: {
         backgroundColor: '#1C7690',
         paddingVertical: 10,
         paddingHorizontal: 10,
+        marginHorizontal: 2,
         borderRadius: 50,
     },
     filterButtonText: {

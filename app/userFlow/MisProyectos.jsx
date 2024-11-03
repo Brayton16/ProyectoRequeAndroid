@@ -5,10 +5,16 @@ import NavBarDisplay from '../../components/navbarDisplay';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useRouter } from 'expo-router';
 
 function ProjectCard({ project }) {
+    const router = useRouter();
+    const handleEdit = (proyectId) => {
+        router.push(`/userFlow/editarProyecto/${proyectId}`);
+    };
+
     return(
         <View style={styles.cardContainer}>
             <View style={styles.headerContainer}>
@@ -37,7 +43,7 @@ function ProjectCard({ project }) {
                     <Text style={styles.buttonText}>Donaciones</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Editar</Text>
+                    <Text style={styles.buttonText} onPress={() => handleEdit(project.ProjectID)}>Editar</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -47,7 +53,7 @@ function ProjectCard({ project }) {
 export default function MisProyectos() {
     const [projects, setProjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-
+    
     useEffect(() => {
         const handleGetProjects = async () => {
             const storedUrl = await AsyncStorage.getItem('API_URL');
@@ -68,45 +74,47 @@ export default function MisProyectos() {
     }, []);
 
     return (
-        <View style={styles.container}>
-            <Stack.Screen options={{ headerShown: false }} />
-            <View style={styles.contentContainer}>
-                <NavBarDisplay/>
-                <ScrollView style={{marginTop: 80, marginHorizontal: 30}} showsVerticalScrollIndicator={false}>
-                <View style={styles.filterContainer}>
-                        <TouchableOpacity style={styles.filterButton}>
-                            <Text style={styles.filterButtonText}>Categoría</Text>
-                        </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton}>
-                            <Text style={styles.filterButtonText}>Recaudado</Text>
-                        </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton}>
-                            <Text style={styles.filterButtonText}>Meta</Text>
-                        </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton}>
-                            <Text style={styles.filterButtonText}>Fecha límite</Text>
-                        </TouchableOpacity>                    
-                    </View>
-                    <View style={styles.SearchBar}>
-                        <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} />
-                        <TextInput
-                            style={{fontFamily: 'SpaceGrotesk', paddingHorizontal: 5, flex: 1}}
-                            placeholder="Buscar proyectos"
-                            placeholderTextColor={'black'}
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
-                            
-                        />
-                    </View>
-                    {projects ? projects.map((project) => (
-                        <ProjectCard key={project.ProjectID} project={project} />
-                    )) : <Text style={styles.text}>Cargando proyectos...</Text>}
-                </ScrollView>
-                <TouchableOpacity style={styles.floatingButton}>
-                    <Ionicons name="add" size={50} color="#ffffff" />
-                </TouchableOpacity>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <View style={styles.container} >
+                <Stack.Screen options={{ headerShown: false }} />
+                <View style={styles.contentContainer}>
+                    <NavBarDisplay/>
+                    <ScrollView style={{marginTop: 80, marginHorizontal: 30}} showsVerticalScrollIndicator={false}>
+                    <View style={styles.filterContainer}>
+                            <TouchableOpacity style={styles.filterButton}>
+                                <Text style={styles.filterButtonText}>Categoría</Text>
+                            </TouchableOpacity>                    
+                            <TouchableOpacity style={styles.filterButton}>
+                                <Text style={styles.filterButtonText}>Recaudado</Text>
+                            </TouchableOpacity>                    
+                            <TouchableOpacity style={styles.filterButton}>
+                                <Text style={styles.filterButtonText}>Meta</Text>
+                            </TouchableOpacity>                    
+                            <TouchableOpacity style={styles.filterButton}>
+                                <Text style={styles.filterButtonText}>Fecha límite</Text>
+                            </TouchableOpacity>                    
+                        </View>
+                        <View style={styles.SearchBar}>
+                            <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} />
+                            <TextInput
+                                style={{fontFamily: 'SpaceGrotesk', paddingHorizontal: 5, flex: 1}}
+                                placeholder="Buscar proyectos"
+                                placeholderTextColor={'black'}
+                                value={searchQuery}
+                                onChangeText={setSearchQuery}
+                                
+                            />
+                        </View>
+                        {projects ? projects.map((project) => (
+                            <ProjectCard key={project.ProjectID} project={project} />
+                        )) : <Text style={styles.text}>Cargando proyectos...</Text>}
+                    </ScrollView>
+                    <TouchableOpacity style={styles.floatingButton}>
+                        <Ionicons name="add" size={50} color="#ffffff" />
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </GestureHandlerRootView>
     );
 }
 

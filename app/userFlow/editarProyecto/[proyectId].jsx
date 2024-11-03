@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ImageBackground, KeyboardAvoidingView } from 'react-native';
-import { useRouter } from 'next/router';
+import { useRouter } from 'expo-router';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
+import { Stack } from 'expo-router';
 
-const EditarProyecto = () => {
+const EditarProyecto = ({ProjectID}) => {
     const router = useRouter();
     const [nombreProyecto, setNombreProyecto] = useState('');
     const [descripcion, setDescripcion] = useState('');
@@ -12,12 +13,32 @@ const EditarProyecto = () => {
     const [historia, setHistoria] = useState('');
     const [fechaHora, setFechaHora] = useState('');
     const [categoria, setCategoria] = useState('');
-
-    const handlePress = (action) => {
-        if(action === 'dashboard'){
-            router.push('/dashboard');
-        }
+    const handlePress = () => {
+        router.push("/userFlow/MisProyectos");
     };
+
+    useEffect(() => {
+        const handleGetProject = async () => {
+            const storedUrl = await AsyncStorage.getItem('API_URL');
+            try {
+                const response = await axios.get(`${storedUrl}/proyecto/id/?projectID=${ProjectID}`);
+                if (response.status === 200) {
+                    setProject(response.data);
+                    setNombreProyecto(response.data.ProjectName)
+                    setDescripcion(response.data.ProjectDescription)
+                    setMetaRecaudacion(response.data.FundingGoal)
+                    setHistoria()
+                    setFechaHora(response.data.FundingDeadline)
+                    setCategoria(response.data.Category)
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            } catch (error) {
+                Alert.alert('Error', 'Algo ha salido mal');
+                console.error(error);
+            }
+        };
+    }, []);
 
     const handleUpdate = async () => {
         try {
@@ -54,7 +75,7 @@ const EditarProyecto = () => {
             >
             </Stack.Screen>
             <ImageBackground 
-                source={require('../../assets/background.png')}
+                source={require('../../../assets/background.png')}
                 style={styles.background}
             >
                 <KeyboardAvoidingView
@@ -121,7 +142,7 @@ const EditarProyecto = () => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.CancelButton}
-                            onPress={() => handlePress('dashboard')}
+                            onPress={() => handlePress()}
                         >
                             <Text style={styles.cancelButtonText}>Cancelar y Volver</Text>
                         </TouchableOpacity>

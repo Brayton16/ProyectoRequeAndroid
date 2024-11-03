@@ -1,5 +1,25 @@
 import { Router } from "express";
-import {getProyects, getProyect, createProyect, updateProyect, deleteProyect, getProyectsByCategory, getProyectsByLimitDate, getProyectsByFundingGoal, getProyectsByCollection, activeProjectsCount, getActiveProjectRatings, makeProjectRating, updateRating, answerProjectRating, updateCommentRating, deactivateProjectRating, getAverageRatingProject, checkNearbyProjects}  from "../models/projects.models.js";
+import { 
+    getProyects, 
+    getProyect, 
+    createProyect, 
+    updateProyect, 
+    deleteProyect, 
+    getProyectsByCategory, 
+    getProyectsByLimitDate, 
+    getProyectsByFundingGoal, 
+    getProyectsByCollection, 
+    activeProjectsCount, 
+    getActiveProjectRatings, 
+    makeProjectRating, 
+    updateRating, 
+    answerProjectRating, 
+    updateCommentRating, 
+    deactivateProjectRating, 
+    getAverageRatingProject, 
+    checkNearbyProjects,
+    getProyectById
+} from "../models/projects.models.js";
 
 const router = Router();
 
@@ -11,6 +31,7 @@ router.get('/proyectos/recaudado', getProyectsByCollection);
 router.get('/proyectos/fechaLimite', getProyectsByLimitDate);
 
 router.get('/proyecto', getProyect);
+router.get('/proyecto/id', getProyectById);
 
 router.post('/proyecto', createProyect);
 

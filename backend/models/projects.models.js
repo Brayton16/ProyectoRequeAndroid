@@ -92,6 +92,20 @@ export const getProyect = async (req, res) => {
     }
 };
 
+export const getProyectById = async (req, res) => {
+    const { projectID } = req.query; // Obtiene los parámetros de consulta de la URL
+
+    try {
+        const pool = await getConnection(); // Obtiene la conexión a la base de datos
+        const result = await pool.request()
+            .input("id", sql.Int, projectID) // Agrega el parámetro de userID
+            .execute('GetActiveProjectById');
+        res.json(result.recordset); // Envía los datos como JSON
+    } catch (error) {
+        res.status(500).send(error.message); // Maneja errores
+    }
+};
+
 export const createProyect = async (req, res) => {
     const { idUser, titulo, descripcion, ubicacion, categoria, dinero, fechaHora, historial } = req.body;
 
