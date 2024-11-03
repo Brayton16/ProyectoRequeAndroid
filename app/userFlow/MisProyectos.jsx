@@ -13,7 +13,7 @@ function ProjectCard({ project }) {
     const router = useRouter();
     
     const handleEdit = (proyectId) => {
-        router.push(`/userFlow/editarProyecto/${proyectId}`);
+        router.push(`/userFlow/${proyectId}`);
     };
 
     return(

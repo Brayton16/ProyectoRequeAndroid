@@ -16,8 +16,9 @@ const EditarProyecto = () => {
     const [categoria, setCategoria] = useState('');
     const [showDatePicker, setShowDatePicker] = useState(false);
     const { proyectId } = useLocalSearchParams();
+
     const handlePress = () => {
-        router.push("/userFlow/MisProyectos");
+        router.back()
     };
 
     useEffect(() => {
@@ -90,7 +91,7 @@ const EditarProyecto = () => {
             >
             </Stack.Screen>
             <ImageBackground 
-                source={require('../../../assets/background.png')}
+                source={require('../../assets/background.png')}
                 style={styles.background}
             >
                 <KeyboardAvoidingView
