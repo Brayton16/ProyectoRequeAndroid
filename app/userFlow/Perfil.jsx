@@ -2,11 +2,16 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'rea
 import { Stack } from "expo-router";
 import NavBarDisplay from '../../components/navbarDisplay';
 import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
+import axios from "axios";
 
 
 export default function Profile() {
 
     const [userData, setUserData] = useState(null);
+    const [userID, setUserID] = useState(0);
+
     // Simulación de datos de usuario
     const simData = {
         UserID: 9,
@@ -23,24 +28,49 @@ export default function Profile() {
         ProfilePhoto: 'https://scontent.fsjo10-1.fna.fbcdn.net/v/t39.30808-1/447462029_7509873185757609_8697984359719734285_n.jpg?stp=dst-jpg_s200x200&_nc_cat=111&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=nfAnNnqcq2kQ7kNvgHJRClu&_nc_zt=24&_nc_ht=scontent.fsjo10-1.fna&_nc_gid=AW1gDXCqQuhoYZWQBUFzfYU&oh=00_AYDGDgTp6qbD8zQBJDTBwOFOEXkZfa0rVn0YZE9-nmMQuQ&oe=672B9487'
     }
 
+    useEffect(() => {
+        const handleGetUserData = async () => {
+            const id = await AsyncStorage.getItem('userID');
+            const parsedUserID = parseInt(id, 10);
+            const storedUrl = await AsyncStorage.getItem('API_URL');
+        
+            try {
+                const response = await axios.get(`${storedUrl}/users/id`, {
+                    params: { userID: parsedUserID }
+                });
+        
+                if (response.status === 200) {
+                    setUserData(response.data[0]);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            } catch (error) {
+                Alert.alert('Error', 'Algo ha salido mal');
+                console.error(error);
+            } 
+        };
+
+        handleGetUserData();
+    }, []);
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <NavBarDisplay/>
             <View style={styles.profileContainer}>
                 <Image
                     style={styles.profileImage}
-                    source={{ uri: simData.ProfilePhoto }}
+                    source={{ uri: simData?.ProfilePhoto }}
                 />
-                <Text style={styles.profileName}>{simData.FirstName} {simData.LastName}</Text>
+                <Text style={styles.profileName}>{userData?.FirstName} {userData?.LastName}</Text>
                 <View style={styles.moneyContainer}>
-                    <Text style={styles.moneyText}>Saldo: {simData.DigitalMoney} </Text>
+                    <Text style={styles.moneyText}>Saldo: {userData?.DigitalMoney}</Text>
                     <Image style={styles.moneyImage} source={require('../../assets/goofycoin.png')}/>
                 </View>
             </View>
             <View style={styles.infoContainer}>
                 <Text style={styles.infoLabel}>Correo</Text>
                 <View style={styles.infoGroup}>
-                    <Text style={styles.infoText}>{simData.Email}</Text>
+                    <Text style={styles.infoText}>{userData?.Email}</Text>
                     <TouchableOpacity><Text style={styles.editLink}>Cambiar correo</Text></TouchableOpacity>
                 </View>
                 <Text style={styles.infoLabel}>Contraseña</Text>
@@ -49,17 +79,17 @@ export default function Profile() {
                     <TouchableOpacity><Text style={styles.editLink}>Cambiar contraseña</Text></TouchableOpacity>
                 </View>
                 <Text style={styles.infoLabel}>Cédula</Text>
-                <Text style={styles.infoText}>{simData.Cedula}</Text>
+                <Text style={styles.infoText}>{userData?.Cedula}</Text>
                 <Text style={styles.infoLabel}>Teléfono</Text>
                 <View style={styles.infoGroup}>                    
-                    <Text style={styles.infoText}>{simData.PhoneNumber}</Text>
+                    <Text style={styles.infoText}>{userData?.PhoneNumber}</Text>
                     <TouchableOpacity><Text style={styles.editLink}>Cambiar teléfono</Text></TouchableOpacity>
                 </View>
                 <Text style={styles.infoLabel}>Rol</Text>
-                <Text style={styles.infoText}>{simData.Rol}</Text>
+                <Text style={styles.infoText}>{userData?.Rol}</Text>
                 <Text style={styles.infoLabel}>Área de conocimiento</Text>
                 <View style={styles.infoGroup}>
-                    <Text style={styles.infoText}>{simData.WorkArea}</Text>
+                    <Text style={styles.infoText}>{userData?.WorkArea}</Text>
                     <TouchableOpacity><Text style={styles.editLink}>Cambiar área</Text></TouchableOpacity>
                 </View>
             </View>

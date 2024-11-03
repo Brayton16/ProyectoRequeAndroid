@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ImageBackground, KeyboardAvoidingView } from 'react-native';
-import { useRouter } from 'next/router';
+//import { useRouter } from 'next/router';
+import { useRouter } from 'expo-router';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 
