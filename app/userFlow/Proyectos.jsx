@@ -213,8 +213,8 @@ export default function Proyectos() {
                         </TouchableOpacity>                    
                     </ScrollView>
                     <View style={styles.filterContainer}>                    
-                        <TouchableOpacity style={styles.filterButton}>
-                            <Text style={styles.filterButtonText} onPress={() => handleFilter("")}>General</Text>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("")}>
+                            <Text style={styles.filterButtonText}> General</Text>
                         </TouchableOpacity>                    
                         <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterFundingGoal(1000)}>
                             <Text style={styles.filterButtonText}>Recaudado</Text>
