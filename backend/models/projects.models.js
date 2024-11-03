@@ -77,7 +77,7 @@ export const getProyectsByLimitDate = async (req, res) => {
     }
 }
 
-export const getProyect = async (req, res) => {
+export const getUserProject = async (req, res) => {
     const { query, userID } = req.query; // Obtiene los parámetros de consulta de la URL
 
     try {
@@ -91,6 +91,67 @@ export const getProyect = async (req, res) => {
         res.status(500).send(error.message); // Maneja errores
     }
 };
+
+export const getUserProjectsByCategory = async (req, res) => {
+    const { query, userID } = req.query; // Obtiene el parámetro de consulta de la URL
+
+    try {
+        const pool = await getConnection(); // Asumiendo que esta es tu función para obtener conexión a la base de datos
+        const result = await pool.request()
+            .input("UserID", sql.Int, userID)
+            .input("SearchQuery", sql.NVarChar, query || '') // Usa el parámetro de consulta de la búsqueda, o una cadena vacía si no se proporciona
+            .execute('GetActiveProjectByCategory');
+        res.json(result.recordset); // Envía los datos como JSON
+    } catch (error) {
+        res.status(500).send(error.message); // Maneja errores
+    }
+}
+
+export const getUserProjectsByFundingGoal = async (req, res) => {
+    const { query, userID } = req.query; // Obtiene el parámetro de consulta de la URL
+
+    try {
+        const pool = await getConnection(); // Asumiendo que esta es tu función para obtener conexión a la base de datos
+        const result = await pool.request()
+            .input("UserID", sql.Int, userID)
+            .input("SearchQuery", sql.NVarChar, query || '') // Usa el parámetro de consulta de la búsqueda, o una cadena vacía si no se proporciona
+            .execute('GetActiveProjectByFundingGoal');
+        res.json(result.recordset); // Envía los datos como JSON
+    } catch (error) {
+        res.status(500).send(error.message); // Maneja errores
+    }
+}
+
+export const getUserProjectsByCollection = async (req, res) => {
+    const { query, userID } = req.query; // Obtiene el parámetro de consulta de la URL
+    console.log("getProyectsByCollection", query)
+
+    try {
+        const pool = await getConnection(); // Asumiendo que esta es tu función para obtener conexión a la base de datos
+        const result = await pool.request()
+            .input("UserID", sql.Int, userID)
+            .input("SearchQuery", sql.NVarChar, query || '') // Usa el parámetro de consulta de la búsqueda, o una cadena vacía si no se proporciona
+            .execute('GetActiveProjectByCollection');
+        res.json(result.recordset); // Envía los datos como JSON
+    } catch (error) {
+        res.status(500).send(error.message); // Maneja errores
+    }
+}
+
+export const getUserProjectsByLimitDate = async (req, res) => {
+    const { query, userID } = req.query; // Obtiene el parámetro de consulta de la URL
+
+    try {
+        const pool = await getConnection(); // Asumiendo que esta es tu función para obtener conexión a la base de datos
+        const result = await pool.request()
+            .input("UserID", sql.Int, userID)
+            .input("SearchQuery", sql.DateTime, query || '') // Usa el parámetro de consulta de la búsqueda, o una cadena vacía si no se proporciona
+            .execute('GetActiveProjectByLimitDate');
+        res.json(result.recordset); // Envía los datos como JSON
+    } catch (error) {
+        res.status(500).send(error.message); // Maneja errores
+    }
+}
 
 export const getProyectById = async (req, res) => {
     const { projectID } = req.query; // Obtiene los parámetros de consulta de la URL

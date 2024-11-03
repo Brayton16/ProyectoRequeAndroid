@@ -8,7 +8,8 @@ import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { SearchBar } from 'react-native-screens';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 function ProjectCard({ project }) {
     return(
@@ -50,24 +51,134 @@ export default function Proyectos() {
     const [projects, setProjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        const handleGetProjects = async () => {
-            const storedUrl = await AsyncStorage.getItem('API_URL');
-            try {
+    const handleGetProjects = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos?query=${filter}`
+        try {
+            if(filter === ""){
                 const response = await axios.get(`${storedUrl}/proyectos`);
                 if (response.status === 200) {
                     setProjects(response.data);
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
-            } catch (error) {
-                Alert.alert('Error', 'Algo ha salido mal');
-                console.error(error);
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
             }
-        };
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
 
-        handleGetProjects();
+    useEffect(() => {
+        handleGetProjects("");
     }, []);
+
+    const handleFilter = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos/categoria?query=${filter}`
+        try {
+            if(filter === ""){
+                const response = await axios.get(`${storedUrl}/proyectos`);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
+
+    const handleFilterFundingGoal = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos/objetivo?query=${filter}`
+        try {
+            if(filter === ""){
+                const response = await axios.get(`${storedUrl}/proyectos`);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
+
+    const handleFilterCollection = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos/recaudado?query=${filter}`
+        try {
+            if(filter === ""){
+                const response = await axios.get(`${storedUrl}/proyectos`);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
+
+    const handleFilterLimitDate = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos/fechaLimite?query=${filter}`
+        try {
+            if(filter === ""){
+                const response = await axios.get(`${storedUrl}/proyectos`);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -75,22 +186,48 @@ export default function Proyectos() {
             <View style={styles.contentContainer}>
                 <NavBarDisplay/>
                 <ScrollView style={{marginTop: 80, marginHorizontal: 30}} showsVerticalScrollIndicator={false}>
-                <View style={styles.filterContainer}>
-                        <TouchableOpacity style={styles.filterButton}>
-                            <Text style={styles.filterButtonText}>Categoría</Text>
+                    <ScrollView horizontal={true} style={styles.UpperfilterContainer}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Tecnología")}>
+                            <Text style={styles.filterButtonText}>Tecnología</Text>
                         </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Salud")}>
+                            <Text style={styles.filterButtonText}>Salud</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Entretenimiento")}>
+                            <Text style={styles.filterButtonText}>Entretenimiento</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Educación")}>
+                            <Text style={styles.filterButtonText}>Educación</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Energía")}>
+                            <Text style={styles.filterButtonText}>Energía</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Arte")}>
+                            <Text style={styles.filterButtonText}>Arte</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Investigación")}>
+                            <Text style={styles.filterButtonText}>Investigación</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Cocina")}>
+                            <Text style={styles.filterButtonText}>Cocina</Text>
+                        </TouchableOpacity>                    
+                    </ScrollView>
+                    <View style={styles.filterContainer}>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("")}>
+                            <Text style={styles.filterButtonText}> General</Text>
+                        </TouchableOpacity>                    
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterFundingGoal(1000)}>
                             <Text style={styles.filterButtonText}>Recaudado</Text>
                         </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterCollection(1000)}>
                             <Text style={styles.filterButtonText}>Meta</Text>
                         </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterLimitDate("10/12/2024")}>
                             <Text style={styles.filterButtonText}>Fecha límite</Text>
                         </TouchableOpacity>                    
                     </View>
                     <View style={styles.SearchBar}>
-                        <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} />
+                        <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} onPress={() => handleGetProjects(searchQuery)}/>
                         <TextInput
                             style={{fontFamily: 'SpaceGrotesk', paddingHorizontal: 5, flex: 1}}
                             placeholder="Buscar proyectos"
@@ -223,15 +360,20 @@ const styles = StyleSheet.create({
     },
     filterContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 10,
         marginTop: 10,
+    },
+    UpperfilterContainer: {
+        marginBottom: 10,
+        marginTop: 10,
+        marginHorizontal: 5,
     },
     filterButton: {
         backgroundColor: '#1C7690',
         paddingVertical: 10,
         paddingHorizontal: 10,
+        marginHorizontal: 2,
         borderRadius: 50,
     },
     filterButtonText: {

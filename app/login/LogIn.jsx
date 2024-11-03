@@ -13,10 +13,10 @@ export default function LogIn(){
 
     const handleLogin = async () => {
         if(correo === 'admin'){
-            await AsyncStorage.setItem('userID', '26');
+            await AsyncStorage.setItem('userID', '1');
             router.push('/adminFlow');
         }else{
-            await AsyncStorage.setItem('userID', '26');
+            await AsyncStorage.setItem('userID', '1');
             router.push('/userFlow');
         }
         // try {

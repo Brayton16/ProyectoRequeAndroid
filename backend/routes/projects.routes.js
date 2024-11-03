@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { 
     getProyects, 
-    getProyect, 
     createProyect, 
     updateProyect, 
     deleteProyect, 
@@ -18,7 +17,12 @@ import {
     deactivateProjectRating, 
     getAverageRatingProject, 
     checkNearbyProjects,
-    getProyectById
+    getProyectById,
+    getUserProject,
+    getUserProjectsByCategory,
+    getUserProjectsByFundingGoal,
+    getUserProjectsByCollection,
+    getUserProjectsByLimitDate
 } from "../models/projects.models.js";
 
 const router = Router();
@@ -30,7 +34,12 @@ router.get('/proyectos/objetivo', getProyectsByFundingGoal);
 router.get('/proyectos/recaudado', getProyectsByCollection);
 router.get('/proyectos/fechaLimite', getProyectsByLimitDate);
 
-router.get('/proyecto', getProyect);
+router.get('/proyectos/usuario', getUserProject);
+router.get('/proyectos/usuario/categoria', getUserProjectsByCategory);
+router.get('/proyectos/usuario/objetivo', getUserProjectsByFundingGoal);
+router.get('/proyectos/usuario/recaudado', getUserProjectsByCollection);
+router.get('/proyectos/usuario/fechaLimite', getUserProjectsByLimitDate);
+
 router.get('/proyecto/id', getProyectById);
 
 router.post('/proyecto', createProyect);
