@@ -51,28 +51,113 @@ export default function Proyectos() {
     const [projects, setProjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        const handleGetProjects = async () => {
-            const storedUrl = await AsyncStorage.getItem('API_URL');
-            try {
+    const handleGetProjects = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos?query=${filter}`
+        try {
+            if(filter === ""){
                 const response = await axios.get(`${storedUrl}/proyectos`);
                 if (response.status === 200) {
                     setProjects(response.data);
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
-            } catch (error) {
-                Alert.alert('Error', 'Algo ha salido mal');
-                console.error(error);
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
             }
-        };
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
 
-        handleGetProjects();
+    useEffect(() => {
+        handleGetProjects("");
     }, []);
 
     const handleFilter = async (filter) => {
         const storedUrl = await AsyncStorage.getItem('API_URL');
         const url = `${storedUrl}/proyectos/categoria?query=${filter}`
+        try {
+            if(filter === ""){
+                const response = await axios.get(`${storedUrl}/proyectos`);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
+
+    const handleFilterFundingGoal = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos/objetivo?query=${filter}`
+        try {
+            if(filter === ""){
+                const response = await axios.get(`${storedUrl}/proyectos`);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
+
+    const handleFilterCollection = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos/recaudado?query=${filter}`
+        try {
+            if(filter === ""){
+                const response = await axios.get(`${storedUrl}/proyectos`);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }else{
+                const response = await axios.get(url);
+                if (response.status === 200) {
+                    setProjects(response.data);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        }
+    };
+
+    const handleFilterLimitDate = async (filter) => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/proyectos/fechaLimite?query=${filter}`
         try {
             if(filter === ""){
                 const response = await axios.get(`${storedUrl}/proyectos`);
@@ -131,18 +216,18 @@ export default function Proyectos() {
                         <TouchableOpacity style={styles.filterButton}>
                             <Text style={styles.filterButtonText} onPress={() => handleFilter("")}>General</Text>
                         </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Recaudado")}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterFundingGoal(1000)}>
                             <Text style={styles.filterButtonText}>Recaudado</Text>
                         </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Meta")}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterCollection(1000)}>
                             <Text style={styles.filterButtonText}>Meta</Text>
                         </TouchableOpacity>                    
-                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Limite")}>
+                        <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterLimitDate("10/12/2024")}>
                             <Text style={styles.filterButtonText}>Fecha límite</Text>
                         </TouchableOpacity>                    
                     </View>
                     <View style={styles.SearchBar}>
-                        <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} onPress={() => handleSearch(searchQuery)}/>
+                        <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} onPress={() => handleGetProjects(searchQuery)}/>
                         <TextInput
                             style={{fontFamily: 'SpaceGrotesk', paddingHorizontal: 5, flex: 1}}
                             placeholder="Buscar proyectos"
