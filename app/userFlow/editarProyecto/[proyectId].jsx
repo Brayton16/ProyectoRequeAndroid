@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ImageBackground, KeyboardAvoidingView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import { Stack } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-const EditarProyecto = ({ProjectID}) => {
+const EditarProyecto = () => {
     const router = useRouter();
     const [nombreProyecto, setNombreProyecto] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [metaRecaudacion, setMetaRecaudacion] = useState('');
-    const [historia, setHistoria] = useState('');
-    const [fechaHora, setFechaHora] = useState('');
+    const [fechaHora, setFechaHora] = useState(new Date());
     const [categoria, setCategoria] = useState('');
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const { proyectId } = useLocalSearchParams();
     const handlePress = () => {
         router.push("/userFlow/MisProyectos");
     };
@@ -20,16 +23,16 @@ const EditarProyecto = ({ProjectID}) => {
     useEffect(() => {
         const handleGetProject = async () => {
             const storedUrl = await AsyncStorage.getItem('API_URL');
+            const url = `${storedUrl}/proyecto/id/?projectID=${proyectId}`
             try {
-                const response = await axios.get(`${storedUrl}/proyecto/id/?projectID=${ProjectID}`);
+                const response = await axios.get(url);
+                const res = response.data[0]
                 if (response.status === 200) {
-                    setProject(response.data);
-                    setNombreProyecto(response.data.ProjectName)
-                    setDescripcion(response.data.ProjectDescription)
-                    setMetaRecaudacion(response.data.FundingGoal)
-                    setHistoria()
-                    setFechaHora(response.data.FundingDeadline)
-                    setCategoria(response.data.Category)
+                    setNombreProyecto(res.ProjectName)
+                    setDescripcion(res.ProjectDescription)
+                    setMetaRecaudacion(res.FundingGoal.toString())
+                    setFechaHora(new Date(res.FundingDeadline))
+                    setCategoria(res.Category)
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
@@ -38,7 +41,9 @@ const EditarProyecto = ({ProjectID}) => {
                 console.error(error);
             }
         };
-    }, []);
+
+        handleGetProject();
+    }, [proyectId]);
 
     const handleUpdate = async () => {
         try {
@@ -52,7 +57,7 @@ const EditarProyecto = ({ProjectID}) => {
                 descripcion: descripcion,
                 meta: metaRecaudacion,
                 historia: historia,
-                fechaHora: fechaHora,
+                fechaHora: fechaHora.toISOString,
                 categoria: categoria
             });
 
@@ -65,6 +70,16 @@ const EditarProyecto = ({ProjectID}) => {
             console.error(error);
         }
     };
+    const showDatepicker = () => {
+        setShowDatePicker(true);
+    };
+
+    const onDateChange = (event, selectedDate) => {
+        const currentDate = selectedDate || fechaHora;
+        setShowDatePicker(false);
+        setFechaHora(currentDate);
+    };
+
 
     return(
         <View style={{flex: 1}}>
@@ -108,28 +123,32 @@ const EditarProyecto = ({ProjectID}) => {
                                 value={metaRecaudacion}
                                 onChangeText={setMetaRecaudacion}
                             />
-                            <TextInput
-                                style={styles.textArea} 
-                                placeholder="Historia del proyecto"
-                                value={historia}
-                                onChangeText={setHistoria}
-                                multiline
-                                numberOfLines={4}
-                            />
-                            <TextInput
-                                style={styles.Items}
-                                placeholder="Fecha y hora del proyecto"
-                                value={fechaHora}
-                                onChangeText={setFechaHora}
-                            />
+                            <TouchableOpacity onPress={showDatepicker} style={styles.datePickerButton}>
+                                <Text style={styles.datePickerText}>{fechaHora ? fechaHora.toDateString() : 'Seleccionar fecha'}</Text>
+                            </TouchableOpacity>
+                            {showDatePicker && (
+                                <DateTimePicker
+                                    value={fechaHora}
+                                    mode="date"
+                                    display="default"
+                                    onChange={onDateChange}
+                                />
+                            )}
                             <View style={styles.Picker}>
                                 <Picker
-                                    style={styles.Item}
+                                    style={styles.Items}
                                     mode={"dropdown"}
                                     selectedValue={categoria}
                                     onValueChange={(itemValue) => setCategoria(itemValue)}
                                 >
-                                    <Picker.Item label="Seleccione una categoría" value="" />
+                                    <Picker.Item label="Tecnología" value="Tecnología" />
+                                    <Picker.Item label="Salud" value="Salud" />
+                                    <Picker.Item label="Entretenimiento" value="Entretenimiento" />
+                                    <Picker.Item label="Educación" value="Educación" />
+                                    <Picker.Item label="Energía" value="Energía" />
+                                    <Picker.Item label="Arte" value="Arte" />
+                                    <Picker.Item label="Investigación" value="Investigación" />
+                                    <Picker.Item label="Cocina" value="Cocina" />
                                     {/* Añadir más opciones aquí */}
                                 </Picker>
                             </View>
@@ -165,7 +184,7 @@ const styles = {
         alignItems: 'center'
     },
     container: {
-        width: '80%',
+        width: 400,
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         padding: 20,
         borderRadius: 10,
@@ -177,7 +196,7 @@ const styles = {
         marginBottom: 20
     },
     Items: {
-        width: '100%',
+        width: 350,
         padding: 10,
         borderColor: '#ccc',
         borderWidth: 1,
@@ -225,6 +244,10 @@ const styles = {
     cancelButtonText: {
         color: 'white',
         fontWeight: 'bold'
+    },
+    datePickerButton: {
+        width: '100%',
+        padding: 10
     }
 };
 
