@@ -15,7 +15,7 @@ const EditarProyecto = () => {
     const [fechaHora, setFechaHora] = useState(new Date());
     const [categoria, setCategoria] = useState('');
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const { proyectId } = useLocalSearchParams();
+    const { editProyectId } = useLocalSearchParams();
 
     const handlePress = () => {
         router.back()
@@ -24,7 +24,7 @@ const EditarProyecto = () => {
     useEffect(() => {
         const handleGetProject = async () => {
             const storedUrl = await AsyncStorage.getItem('API_URL');
-            const url = `${storedUrl}/proyecto/id/?projectID=${proyectId}`
+            const url = `${storedUrl}/proyecto/id/?projectID=${editProyectId}`
             try {
                 const response = await axios.get(url);
                 const res = response.data[0]
@@ -44,11 +44,11 @@ const EditarProyecto = () => {
         };
 
         handleGetProject();
-    }, [proyectId]);
+    }, [editProyectId]);
 
     const handleUpdate = async () => {
         try {
-            if (!nombreProyecto || !descripcion || !metaRecaudacion || !historia || !fechaHora || !categoria) {
+            if (!nombreProyecto || !descripcion || !metaRecaudacion  || !fechaHora || !categoria) {
                 Alert.alert('Error', 'Todos los campos son obligatorios');
                 return;
             }
@@ -57,7 +57,6 @@ const EditarProyecto = () => {
                 nombre: nombreProyecto,
                 descripcion: descripcion,
                 meta: metaRecaudacion,
-                historia: historia,
                 fechaHora: fechaHora.toISOString,
                 categoria: categoria
             });
@@ -91,7 +90,7 @@ const EditarProyecto = () => {
             >
             </Stack.Screen>
             <ImageBackground 
-                source={require('../../assets/background.png')}
+                source={require('../../../assets/background.png')}
                 style={styles.background}
             >
                 <KeyboardAvoidingView

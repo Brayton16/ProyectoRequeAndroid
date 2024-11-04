@@ -8,10 +8,14 @@ import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { SearchBar } from 'react-native-screens';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useRouter } from 'expo-router';
 
 function ProjectCard({ project }) {
+    const router = useRouter();
+    const handleProyect = (proyectID) => {
+        router.push(`/userFlow/Proyecto/${proyectID}`);
+    };
     return(
         <View style={styles.cardContainer}>
             <View style={styles.headerContainer}>
@@ -39,7 +43,7 @@ function ProjectCard({ project }) {
                 {/* <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText}>Donaciones</Text>
                 </TouchableOpacity> */}
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => handleProyect(project.ProjectID)}>
                     <Text style={styles.buttonText}>Conocer</Text>
                 </TouchableOpacity>
             </View>
@@ -50,6 +54,7 @@ function ProjectCard({ project }) {
 export default function Proyectos() {
     const [projects, setProjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+
 
     const handleGetProjects = async (filter) => {
         const storedUrl = await AsyncStorage.getItem('API_URL');

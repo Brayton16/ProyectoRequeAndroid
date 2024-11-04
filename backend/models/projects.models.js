@@ -304,11 +304,11 @@ export const activeProjectsCount = async (req, res) => {
 }
 
 export const getActiveProjectRatings = async (req, res) => {
-    const { projectID } = req.body; // Obtiene el parámetro de consulta de la URL
+    const { projectID } = req.query; // Obtiene el parámetro de consulta de la URL
     
     // se verifica si algun campo requerido no se ingreso
     if (
-        projectID == null
+        projectID === null
     ){ 
         return res.status(400).json({ msg: "Error: Informacion incompleta" });
     }
@@ -331,7 +331,7 @@ export const makeProjectRating = async (req, res) => {
     console.log(req.body)
     // Se verifica si algún campo requerido no se ingresó
     if (
-        projectID == null || userID == null || rating == null || (rating < 1 || rating > 5)
+        projectID === null || userID === null || rating === null || (rating < 1 || rating > 5)
     ){
         return res.status(400).json({ msg: "Error: Información incompleta" });
     }
