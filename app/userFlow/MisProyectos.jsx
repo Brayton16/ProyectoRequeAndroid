@@ -20,7 +20,10 @@ function ProjectCard({ project }) {
         <View style={styles.cardContainer}>
             <View style={styles.headerContainer}>
                 <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>{project.ownerInitials}</Text>
+                    <Image 
+                        style={styles.avatarImage}
+                        source={{ uri: 'https://scontent.fsjo10-1.fna.fbcdn.net/v/t39.30808-1/447462029_7509873185757609_8697984359719734285_n.jpg?stp=dst-jpg_s200x200&_nc_cat=111&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=nfAnNnqcq2kQ7kNvgHJRClu&_nc_zt=24&_nc_ht=scontent.fsjo10-1.fna&_nc_gid=AW1gDXCqQuhoYZWQBUFzfYU&oh=00_AYDGDgTp6qbD8zQBJDTBwOFOEXkZfa0rVn0YZE9-nmMQuQ&oe=672B9487' }}
+                    />
                 </View>
                 <View style={styles.headerTextContainer}>
                     <Text style={styles.headerTitle}>{project.FirstName}</Text>
@@ -30,7 +33,7 @@ function ProjectCard({ project }) {
             <View style={styles.imageContainer}>
                 <Image
                     style={styles.image}
-                    source={{ uri: project.imageUri }}
+                    source={{ uri:  "https://images.ctfassets.net/wn7ipiv9ue5v/NwgElAZU8ZdLmW6v7812Y/41f23ac2004e4db655439c8010ba22f2/3-4_GTA--Gen_9_Vista_Reshoot_CF__3_.jpg" }}
                     resizeMode="cover"
                 />
             </View>
@@ -254,10 +257,10 @@ export default function MisProyectos() {
                             <ProjectCard key={project.ProjectID} project={project} />
                         )) : <Text style={styles.text}>Cargando proyectos...</Text>}
                     </ScrollView>
-                    <TouchableOpacity style={styles.floatingButton}>
-                        <Ionicons name="add" size={50} color="#ffffff" />
-                    </TouchableOpacity>
                 </View>
+                <TouchableOpacity style={styles.floatingButton}>
+                    <Ionicons name="add" size={50} color="#ffffff" />
+                </TouchableOpacity>
             </View>
         </GestureHandlerRootView>
     );
@@ -306,17 +309,16 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     avatar: {
-        backgroundColor: '#6A1B9A',
         borderRadius: 25,
         width: 50,
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    avatarText: {
-        color: '#ffffff',
-        fontSize: 18,
-        fontFamily: 'SpaceGrotesk',
+    avatarImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 50,
     },
     headerTextContainer: {
         marginLeft: 10,
@@ -402,6 +404,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1C7690',
         paddingVertical: 10,
         paddingHorizontal: 10,
+        marginHorizontal: 2,
         borderRadius: 50,
     },
     filterButtonText: {

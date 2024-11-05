@@ -340,7 +340,7 @@ export const makeDonation = async (req, res) =>{
 
 export const getUserDonations = async (req, res) =>{
     console.log(req.query)
-    const {userID } = req.query; // Obtiene los parámetros de consulta de la URL
+    const { userID } = req.query; // Obtiene los parámetros de consulta de la URL
 
     // se verifica si algun campo requerido no se ingreso
     if (

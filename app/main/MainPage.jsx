@@ -11,7 +11,7 @@ const MainPage = () => {
     const router = useRouter()
 
     const handlePress = async (action) => {
-        await AsyncStorage.setItem('API_URL', "http://192.168.1.102:3001");
+        await AsyncStorage.setItem('API_URL', "http://192.168.100.114:3001");
         if(action === 'registro'){
             router.push('/registro/Registro');
         } else if(action === 'inicio'){
