@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ImageBackground, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ImageBackground, KeyboardAvoidingView, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
@@ -16,6 +16,7 @@ const EditarProyecto = () => {
     const [categoria, setCategoria] = useState('');
     const [showDatePicker, setShowDatePicker] = useState(false);
     const { editProyectId } = useLocalSearchParams();
+    const [email, setEmail] = useState('');
 
     const handlePress = () => {
         router.back()
@@ -34,6 +35,7 @@ const EditarProyecto = () => {
                     setMetaRecaudacion(res.FundingGoal.toString())
                     setFechaHora(new Date(res.FundingDeadline))
                     setCategoria(res.Category)
+                    setEmail(res.Email)
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
@@ -48,22 +50,23 @@ const EditarProyecto = () => {
 
     const handleUpdate = async () => {
         try {
-            if (!nombreProyecto || !descripcion || !metaRecaudacion  || !fechaHora || !categoria) {
+            if (!nombreProyecto || !descripcion || !metaRecaudacion  || !fechaHora || !categoria  || !email || !editProyectId) {
                 Alert.alert('Error', 'Todos los campos son obligatorios');
                 return;
             }
-
-            const response = await axios.put('http://localhost:3001/projects/update', {
-                nombre: nombreProyecto,
-                descripcion: descripcion,
-                meta: metaRecaudacion,
-                fechaHora: fechaHora.toISOString,
-                categoria: categoria
+            const storedUrl = await AsyncStorage.getItem('API_URL');
+            const response = await axios.put(`http://${storedUrl}:3001/projects/update`, {
+                ProjectID: editProyectId,
+                ProjectName: nombreProyecto,
+                ProjectDescription: descripcion,
+                FundingGoal: metaRecaudacion,
+                FundingDeadline: fechaHora.toISOString,
+                Category: categoria,
+                Email: email
             });
 
             console.log("Actualización exitosa");
             Alert.alert('Éxito', 'Proyecto actualizado correctamente');
-            router.push('/dashboard');
 
         } catch (error) {
             Alert.alert('Error', 'Hubo un problema al actualizar el proyecto');
@@ -89,90 +92,85 @@ const EditarProyecto = () => {
                 }}
             >
             </Stack.Screen>
-            <ImageBackground 
-                source={require('../../../assets/background.png')}
-                style={styles.background}
-            >
-                <KeyboardAvoidingView
-                    style={styles.containerWrapper}
-                    behavior="height"
-                    keyboardVerticalOffset={30}
-                > 
-                    <View style={styles.container}>
-                        <Text
-                            style={styles.titleText}
-                        >
-                            Editar Proyecto
-                        </Text>
-                        <View>
-                            <TextInput   
-                                style={styles.Items} 
-                                placeholder="Nombre del proyecto"
-                                value={nombreProyecto}
-                                onChangeText={setNombreProyecto}
+            <KeyboardAvoidingView
+                style={styles.containerWrapper}
+                behavior="height"
+                keyboardVerticalOffset={30}
+            > 
+                <View style={styles.container}>
+                    <Text
+                        style={styles.titleText}
+                    >
+                        Editar Proyecto
+                    </Text>
+                    <View>
+                        <TextInput   
+                            style={styles.Items} 
+                            placeholder="Nombre del proyecto"
+                            value={nombreProyecto}
+                            onChangeText={setNombreProyecto}
+                        />
+                        <TextInput
+                            style={styles.Items} 
+                            placeholder="Descripción"
+                            value={descripcion}
+                            onChangeText={setDescripcion}
+                        />
+                        <TextInput
+                            style={styles.Items} 
+                            placeholder="Meta de recaudación"
+                            value={metaRecaudacion}
+                            onChangeText={setMetaRecaudacion}
+                        />
+                        <TouchableOpacity onPress={showDatepicker} style={styles.datePickerButton}>
+                            <Text style={styles.datePickerText}>{fechaHora ? fechaHora.toDateString() : 'Seleccionar fecha'}</Text>
+                        </TouchableOpacity>
+                        {showDatePicker && (
+                            <DateTimePicker
+                                value={fechaHora}
+                                mode="date"
+                                display="default"
+                                onChange={onDateChange}
                             />
-                            <TextInput
-                                style={styles.Items} 
-                                placeholder="Descripción"
-                                value={descripcion}
-                                onChangeText={setDescripcion}
-                            />
-                            <TextInput
-                                style={styles.Items} 
-                                placeholder="Meta de recaudación"
-                                value={metaRecaudacion}
-                                onChangeText={setMetaRecaudacion}
-                            />
-                            <TouchableOpacity onPress={showDatepicker} style={styles.datePickerButton}>
-                                <Text style={styles.datePickerText}>{fechaHora ? fechaHora.toDateString() : 'Seleccionar fecha'}</Text>
-                            </TouchableOpacity>
-                            {showDatePicker && (
-                                <DateTimePicker
-                                    value={fechaHora}
-                                    mode="date"
-                                    display="default"
-                                    onChange={onDateChange}
-                                />
-                            )}
-                            <View style={styles.Picker}>
-                                <Picker
-                                    style={styles.Items}
-                                    mode={"dropdown"}
-                                    selectedValue={categoria}
-                                    onValueChange={(itemValue) => setCategoria(itemValue)}
-                                >
-                                    <Picker.Item label="Tecnología" value="Tecnología" />
-                                    <Picker.Item label="Salud" value="Salud" />
-                                    <Picker.Item label="Entretenimiento" value="Entretenimiento" />
-                                    <Picker.Item label="Educación" value="Educación" />
-                                    <Picker.Item label="Energía" value="Energía" />
-                                    <Picker.Item label="Arte" value="Arte" />
-                                    <Picker.Item label="Investigación" value="Investigación" />
-                                    <Picker.Item label="Cocina" value="Cocina" />
-                                    {/* Añadir más opciones aquí */}
-                                </Picker>
-                            </View>
+                        )}
+                        <View style={styles.Picker}>
+                            <Picker
+                                style={styles.Items}
+                                mode={"dropdown"}
+                                selectedValue={categoria}
+                                onValueChange={(itemValue) => setCategoria(itemValue)}
+                            >
+                                <Picker.Item label="Tecnología" value="Tecnología" />
+                                <Picker.Item label="Salud" value="Salud" />
+                                <Picker.Item label="Entretenimiento" value="Entretenimiento" />
+                                <Picker.Item label="Educación" value="Educación" />
+                                <Picker.Item label="Energía" value="Energía" />
+                                <Picker.Item label="Arte" value="Arte" />
+                                <Picker.Item label="Investigación" value="Investigación" />
+                                <Picker.Item label="Cocina" value="Cocina" />
+                                {/* Añadir más opciones aquí */}
+                            </Picker>
                         </View>
-                        <TouchableOpacity
-                            style={styles.Button}
-                            onPress={handleUpdate}
-                        >
-                            <Text style={styles.buttonText}>Editar Proyecto</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.CancelButton}
-                            onPress={() => handlePress()}
-                        >
-                            <Text style={styles.cancelButtonText}>Cancelar y Volver</Text>
-                        </TouchableOpacity>
                     </View>
-                </KeyboardAvoidingView>    
-            </ImageBackground>
+                    <TouchableOpacity
+                        style={styles.Button}
+                        onPress={handleUpdate}
+                    >
+                        <Text style={styles.buttonText}>Editar Proyecto</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.CancelButton}
+                        onPress={() => handlePress()}
+                    >
+                        <Text style={styles.cancelButtonText}>Cancelar y Volver</Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAvoidingView>    
         </View>
     )
 }
 
-const styles = {
+const styles = StyleSheet.create({
     background: {
         flex: 1,
         justifyContent: 'center',
@@ -181,7 +179,8 @@ const styles = {
     containerWrapper: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: '#fcfcfc',
     },
     container: {
         width: 400,
@@ -192,7 +191,7 @@ const styles = {
     },
     titleText: {
         fontSize: 24,
-        fontWeight: 'bold',
+        fontFamily: 'SpaceGroteskBold',
         marginBottom: 20
     },
     Items: {
@@ -222,7 +221,7 @@ const styles = {
         marginBottom: 15
     },
     Button: {
-        backgroundColor: '#007BFF',
+        backgroundColor: '#1C7690',
         padding: 15,
         borderRadius: 5,
         alignItems: 'center',
@@ -231,7 +230,7 @@ const styles = {
     },
     buttonText: {
         color: 'white',
-        fontWeight: 'bold'
+        fontFamily: 'SpaceGrotesk',
     },
     CancelButton: {
         backgroundColor: '#FF5733',
@@ -243,12 +242,13 @@ const styles = {
     },
     cancelButtonText: {
         color: 'white',
-        fontWeight: 'bold'
+        fontFamily: 'SpaceGrotesk',
+        
     },
     datePickerButton: {
         width: '100%',
         padding: 10
     }
-};
+});
 
 export default EditarProyecto;

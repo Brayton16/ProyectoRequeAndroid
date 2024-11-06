@@ -371,11 +371,19 @@ export const getUserDonations = async (req, res) =>{
 }
 
 export const getAllDonations = async (req, res) =>{
+    console.log(req.query)
+    const { ProjectID } = req.query;
+    if (
+        ProjectID == null
+    ) {
+        return res.status(400).json({ msg: "Error: Informacion incompleta" });
+    }
     try {
         const pool = await getConnection();
  
         const result = await pool
         .request()
+        .input("ProjectID", sql.Int, ProjectID)
         .execute('GetAllDonations');   
         
         if (result.rowsAffected[0] === 0) return res.sendStatus(404);
