@@ -1,24 +1,22 @@
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { Stack } from "expo-router";
-import NavBarDisplay from '../../components/navbarDisplay';
+import NavBarBack from '../../../components/navbarBack';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import  { Alert } from 'react-native';
-export default function Historial() {
+import { useLocalSearchParams } from 'expo-router';
+
+
+export default function ProjectHistorial() {
     const [donations, setDonations] = useState([]);
-    const [userID, setUserID] = useState(0);
+    const { projectID } = useLocalSearchParams();
 
     useEffect(() => {
         const handleGetUserData = async () => {
-            const id = await AsyncStorage.getItem('userID');
-            if (id) {
-                setUserID(parseInt(id, 10));
-            }
-            const parsedUserID = parseInt(id, 10);
             const storedUrl = await AsyncStorage.getItem('API_URL');
             try{
-                const response = await axios.get(`${storedUrl}/users/donation?userID=${parsedUserID}`);
+                const response = await axios.get(`${storedUrl}/users/donation/all?ProjectID=${projectID}`);
                 setDonations(response.data);
             }catch(error) {
                 Alert.alert('Error', 'Algo ha salido mal');
@@ -32,7 +30,7 @@ export default function Historial() {
         <View style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
             <View style={styles.contentContainer}>
-                <NavBarDisplay/>
+                <NavBarBack />
                 {/* <Text style={styles.title}>Historial</Text>
                 <Text style={styles.text}>Bienvenido a la pantalla de Historial.</Text> */}
                 <ScrollView style={styles.historialContainer}>
@@ -41,14 +39,9 @@ export default function Historial() {
                                 <Image
                                     style={styles.historialImage}
                                     source={ {uri:'https://scontent.fsjo10-1.fna.fbcdn.net/v/t39.30808-1/447462029_7509873185757609_8697984359719734285_n.jpg?stp=dst-jpg_s200x200&_nc_cat=111&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=nfAnNnqcq2kQ7kNvgHJRClu&_nc_zt=24&_nc_ht=scontent.fsjo10-1.fna&_nc_gid=AW1gDXCqQuhoYZWQBUFzfYU&oh=00_AYDGDgTp6qbD8zQBJDTBwOFOEXkZfa0rVn0YZE9-nmMQuQ&oe=672B9487'}}
-
                                 />
                                 <View style={styles.historialTextContainer}>
-                                    { donation.OwnerID !== userID ? (
-                                        <Text style={styles.providerText}>¡Has donado a {donation.OwnerFirstName} {donation.OwnerLastName}!</Text>
-                                    ):(
-                                        <Text style={styles.providerText}>¡{donation.DonorFirstName} {donation.DonorLastName} te ha donado!</Text>
-                                    )}
+                                    <Text style={styles.providerText}>¡{donation.DonorFirstName} {donation.DonorLastName} te ha donado!</Text>
                                     <Text style={styles.amountText}>{donation.Amount} goofycoins al proyecto: {donation.ProjectName}</Text>
                                 </View>
                             </View>
@@ -117,7 +110,6 @@ const styles = StyleSheet.create({
     amountText: {
         fontSize: 14,
         fontFamily: 'SpaceGrotesk',
-        paddingRight: 10,
     },
     noDonationsContainer: {
         flex: 1,

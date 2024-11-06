@@ -6,6 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import NavBarBack from '../../../components/navbarBack';
 
 const EditarProyecto = () => {
     const router = useRouter();
@@ -96,7 +97,8 @@ const EditarProyecto = () => {
                 style={styles.containerWrapper}
                 behavior="height"
                 keyboardVerticalOffset={30}
-            > 
+                > 
+                <NavBarBack/>
                 <View style={styles.container}>
                     <Text
                         style={styles.titleText}
@@ -127,6 +129,7 @@ const EditarProyecto = () => {
                         </TouchableOpacity>
                         {showDatePicker && (
                             <DateTimePicker
+                                style={styles.datePicker}
                                 value={fechaHora}
                                 mode="date"
                                 display="default"
@@ -174,7 +177,8 @@ const styles = StyleSheet.create({
     background: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
     },
     containerWrapper: {
         flex: 1,
@@ -199,25 +203,25 @@ const styles = StyleSheet.create({
         padding: 10,
         borderColor: '#ccc',
         borderWidth: 1,
-        borderRadius: 5,
-        marginBottom: 15
+        borderRadius: 15,
+        marginBottom: 30
     },
     textArea: {
         width: '100%',
         padding: 10,
         borderColor: '#ccc',
         borderWidth: 1,
-        borderRadius: 5,
+        borderRadius: 15,
         marginBottom: 15,
         height: 100,
         textAlignVertical: 'top'
     },
     Picker: {
         width: '100%',
-        padding: 10,
         borderColor: '#ccc',
+        alignContent: 'center',
         borderWidth: 1,
-        borderRadius: 5,
+        borderRadius: 15,
         marginBottom: 15
     },
     Button: {
@@ -247,7 +251,11 @@ const styles = StyleSheet.create({
     },
     datePickerButton: {
         width: '100%',
-        padding: 10
+        padding: 10,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 15,
+        marginBottom: 30,
     }
 });
 

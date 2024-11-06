@@ -5,7 +5,7 @@ import axios from 'axios';
 import NavBarDisplay from '../../components/navbarDisplay';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Estadisticas() {
+function Estadisticas() {
     const [estadisticas, setEstadisticas] = useState({
         usuarios: { total: 0, ultimoMes: 0 },
         donaciones: { total: 0, ultimoMes: 0 },
@@ -68,12 +68,13 @@ export default function Estadisticas() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#ffffff',
     },
     contentContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#fcfcfc',
     },
     scrollView: {
         marginTop: 80,

@@ -1,21 +1,20 @@
 import * as React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text } from 'react-native';
 import { StyleSheet, TouchableOpacity } from'react-native';
-import Entypo from'react-native-vector-icons/Entypo';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import Ionicons from'react-native-vector-icons/Ionicons';
+import { useRouter } from 'expo-router';
 
-export default function NavBarDisplay() {
-    const navigation = useNavigation();
+export default function NavBarBack() {
+    const router = useRouter();
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={() => {navigation.openDrawer()}}>
-                    <Entypo name='menu' size={24} color="black"/>
+            <TouchableOpacity onPress={() => {router.back()}}>
+                    <Ionicons name='arrow-back' size={24} color="black"/>
             </TouchableOpacity>
             <Text style={styles.text}>FundMePls</Text>
         </View>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {

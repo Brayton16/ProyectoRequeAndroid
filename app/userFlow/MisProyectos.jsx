@@ -15,6 +15,9 @@ function ProjectCard({ project }) {
     const handleEdit = (editProyectId) => {
         router.push(`/userFlow/EditarProyecto/${editProyectId}`);
     };
+    const handleDonations = (proyectID) => {
+        router.push(`/userFlow/DonacionesProyecto/${proyectID}`);
+    };
 
     return(
         <View style={styles.cardContainer}>
@@ -44,7 +47,7 @@ function ProjectCard({ project }) {
             </View>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Donaciones</Text>
+                    <Text style={styles.buttonText} onPress={() => handleDonations(project.ProjectID)}>Donaciones</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText} onPress={() => handleEdit(project.ProjectID)}>Editar</Text>
