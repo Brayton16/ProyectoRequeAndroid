@@ -34,7 +34,7 @@ export const login = async (req, res) => {
         return res.status(200).json({
             message: "Login realizado exitosamente.",
             userID: userInfo.UserID,
-            IsAdmin: userInfo.IsAdmin
+            rol: userInfo.Rol
         });
 
     } catch (error) {
@@ -253,6 +253,115 @@ export const addUserMoney = async (req, res) =>{
         const newDigitalMoney = result.recordset[0]
 
         res.json(newDigitalMoney);
+
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+}
+
+export const addUserCorreo = async (req, res) =>{
+    console.log(req.body)
+    const {UserID, NewEmail} = req.body;
+
+    // se verifica si algun campo requerido no se ingreso
+    if (
+        UserID == null || NewEmail == null
+    ) {
+        return res.status(400).json({ msg: "Error: Informacion incompleta" });
+    }
+
+    try {
+        const pool = await getConnection();
+ 
+        const result = await pool
+        .request()
+        .input("UserID", sql.Int, UserID)
+        .input("NewEmail", sql.VarChar, NewEmail)
+        .execute('UpdateUserEmail');
+
+        res.json("Correo actualizado");
+
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+}
+export const addUserPassword = async (req, res) =>{
+    console.log(req.body)
+    const {UserID, NewPassword} = req.body;
+
+    // se verifica si algun campo requerido no se ingreso
+    if (
+        UserID == null || NewPassword == null
+    ) {
+        return res.status(400).json({ msg: "Error: Informacion incompleta" });
+    }
+
+    try {
+        const pool = await getConnection();
+ 
+        const result = await pool
+        .request()
+        .input("UserID", sql.Int, UserID)
+        .input("NewPassword", sql.VarChar, NewPassword)
+        .execute('UpdateUserPassword');
+
+        res.json("Contraseña actualizada");
+
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+}
+export const addUserTelefono = async (req, res) =>{
+    console.log(req.body)
+    const {UserID, NewPhoneNumber} = req.body;
+
+    // se verifica si algun campo requerido no se ingreso
+    if (
+        UserID == null || NewPhoneNumber == null
+    ) {
+        return res.status(400).json({ msg: "Error: Informacion incompleta" });
+    }
+
+    try {
+        const pool = await getConnection();
+ 
+        const result = await pool
+        .request()
+        .input("UserID", sql.Int, UserID)
+        .input("NewPhoneNumber", sql.VarChar, NewPhoneNumber)
+        .execute('UpdateUserPhoneNumber');
+
+        res.json("Telefono actualizado");
+
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+}
+export const addUserArea = async (req, res) =>{
+    console.log(req.body)
+    const {UserID, NewArea} = req.body;
+
+    // se verifica si algun campo requerido no se ingreso
+    if (
+        UserID == null || NewArea == null
+    ) {
+        return res.status(400).json({ msg: "Error: Informacion incompleta" });
+    }
+
+    try {
+        const pool = await getConnection();
+ 
+        const result = await pool
+        .request()
+        .input("UserID", sql.Int, UserID)
+        .input("NewWorkArea", sql.VarChar, NewArea)
+        .execute('UpdateUserWorkArea');
+
+        res.json("Area actualizada");
 
     } catch (error) {
         res.status(500);

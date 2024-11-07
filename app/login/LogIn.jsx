@@ -12,38 +12,42 @@ export default function LogIn(){
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        if(correo === 'admin'){
-            await AsyncStorage.setItem('userID', '1');
-            router.push('/adminFlow');
-        }else{
-            await AsyncStorage.setItem('userID', '1');
-            router.push('/userFlow');
-        }
-        // try {
-        //     // para probar desde el expo go se usa el ipv4 local en las routes
-        //     // const response = await axios.post('http://192.168.100.29:3001/users/login', {
-        //     // desde la web se usa localhost en las routes
-
-        //     const response = await axios.post('http://localhost:3001/users/login', {
-        //         email: correo,
-        //         password: password
-        //     });
-    
-        //     if (response.status === 200) {
-        //         console.log("Login existoso")
-        //         const { userID, IsAdmin } = response.data;
-    
-        //         // Guardar el ID del usuario en AsyncStorage para saber cual es usuario activo
-        //         // Para accederlo se hace un const userID = AsyncStorage.getItem('userID');
-        //         await AsyncStorage.setItem('userID', userID.toString());
-    
-        //     } else {
-        //         Alert.alert('Error', 'Credenciales incorrectas');
-        //     }
-        // } catch (error) {
-        //     Alert.alert('Error', 'El usuario ingresado no existe');
-        //     console.error(error);
+        // if(correo === 'admin'){
+        //     await AsyncStorage.setItem('userID', '1');
+        //     router.push('/adminFlow');
+        // }else{
+        //     await AsyncStorage.setItem('userID', '1');
+        //     router.push('/userFlow');
         // }
+        try {
+            // para probar desde el expo go se usa el ipv4 local en las routes
+            // const response = await axios.post('http://192.168.100.29:3001/users/login', {
+            // desde la web se usa localhost en las routes
+            const storedUrl = await AsyncStorage.getItem('API_URL');
+            const response = await axios.post(`${storedUrl}/users/login`, {
+                email: correo,
+                password: password
+            });
+    
+            if (response.status === 200) {
+                console.log("Login existoso")
+                const { userID, rol } = response.data;
+    
+                // Guardar el ID del usuario en AsyncStorage para saber cual es usuario activo
+                // Para accederlo se hace un const userID = AsyncStorage.getItem('userID');
+                await AsyncStorage.setItem('userID', userID.toString());
+                if (rol === 'User' ) {
+                    router.push('/userFlow');
+                } else {
+                    router.push('/adminFlow');
+                }
+            } else {
+                Alert.alert('Error', 'Credenciales incorrectas');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'El usuario ingresado no existe');
+            console.error(error);
+        }
     };
     
 

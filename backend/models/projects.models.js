@@ -19,6 +19,21 @@ export const getProyects = async (req, res) => {
         res.status(500).send(error.message); // Maneja errores
     }
 };
+export const getProyectsByOwner = async (req, res) => {
+    const { query, userID } = req.query; // Obtiene el parámetro de consulta de la URL
+
+    try {
+
+        const pool = await getConnection(); // Asumiendo que esta es tu función para obtener conexión a la base de datos
+        const result = await pool.request()
+            .input("SearchQuery", sql.NVarChar, query || '') // Usa el parámetro de consulta de la búsqueda, o una cadena vacía si no se proporciona
+            .input("UserID", sql.Int, userID) // Usa el parámetro de consulta de la búsqueda, o una cadena vacía si no se proporciona
+            .execute('GetActiveProjectsByOwner');
+        res.json(result.recordset); // Envía los datos como JSON
+    } catch (error) {
+        res.status(500).send(error.message); // Maneja errores
+    }
+};
  
 export const getProyectsByCategory = async (req, res) => {
     const { query } = req.query; // Obtiene el parámetro de consulta de la URL
@@ -168,13 +183,13 @@ export const getProyectById = async (req, res) => {
 };
 
 export const createProyect = async (req, res) => {
-    const { idUser, titulo, descripcion, ubicacion, categoria, dinero, fechaHora, historial } = req.body;
+    const { titulo, descripcion, categoria, dinero, fechaHora, idUser } = req.body;
 
     console.log(req.body)
     // Se verifica si algún campo requerido no se ingresó
     if (
-        idUser == null || titulo == null || descripcion == null || ubicacion == null 
-        || categoria == null || historial == null || dinero == null || fechaHora == null
+        titulo == null || descripcion == null
+        || categoria == null || idUser == null || dinero == null || fechaHora == null
     ){
         return res.status(400).json({ msg: "Error: Información incompleta" });
     }
@@ -212,7 +227,7 @@ export const createProyect = async (req, res) => {
 
 export const updateProyect = async (req, res) =>{
     const {ProjectName, ProjectDescription, FundingGoal, FundingDeadline
-        , MediaURL, Category, idProyect} = req.body;
+        , Category, idProyect} = req.body;
 
     // se verifica si algun campo requerido no se ingreso
     if (
@@ -230,7 +245,6 @@ export const updateProyect = async (req, res) =>{
         .input("ProjectDescription", sql.NVarChar, ProjectDescription)
         .input("FundingGoal", sql.Decimal, FundingGoal)
         .input("FundingDeadline", sql.DateTime, FundingDeadline)
-        .input("MediaURL", sql.NVarChar, MediaURL)
         .input("Category", sql.NVarChar, Category)
         .output("FirstName" , sql.NVarChar)
         .output("Email", sql.VarChar)
@@ -256,7 +270,7 @@ export const updateProyect = async (req, res) =>{
 };
 
 export const deleteProyect = async (req, res) =>{
-    const {id} = req.body;
+    const {id} = req.query;
 
     // se verifica si algun campo requerido no se ingreso
     if (

@@ -22,12 +22,14 @@ import {
     getUserProjectsByCategory,
     getUserProjectsByFundingGoal,
     getUserProjectsByCollection,
-    getUserProjectsByLimitDate
+    getUserProjectsByLimitDate,
+    getProyectsByOwner
 } from "../models/projects.models.js";
 
 const router = Router();
 
 router.get('/proyectos', getProyects);
+router.get('/proyectos/id', getProyectsByOwner);
 
 router.get('/proyectos/categoria', getProyectsByCategory);
 router.get('/proyectos/objetivo', getProyectsByFundingGoal);

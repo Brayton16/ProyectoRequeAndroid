@@ -1,6 +1,9 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Stack } from "expo-router";
 import NavBarDisplay from '../../components/navbarDisplay';
+
+//TODO: Implementar foros
+
 export default function Foro() {
     return (
         <View style={styles.container}>

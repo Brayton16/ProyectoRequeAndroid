@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ImageBackground, KeyboardAvoidingView, StyleSheet } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import { Stack } from 'expo-router';
@@ -8,7 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import NavBarBack from '../../../components/navbarBack';
 
-const EditarProyecto = () => {
+
+const InsertarProyecto = () => {
     const router = useRouter();
     const [nombreProyecto, setNombreProyecto] = useState('');
     const [descripcion, setDescripcion] = useState('');
@@ -16,60 +17,33 @@ const EditarProyecto = () => {
     const [fechaHora, setFechaHora] = useState(new Date());
     const [categoria, setCategoria] = useState('');
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const { editProyectId } = useLocalSearchParams();
-    const [email, setEmail] = useState('');
 
     const handlePress = () => {
         router.back()
     };
 
-    useEffect(() => {
-        const handleGetProject = async () => {
-            const storedUrl = await AsyncStorage.getItem('API_URL');
-            const url = `${storedUrl}/proyecto/id/?projectID=${editProyectId}`
-            try {
-                const response = await axios.get(url);
-                const res = response.data[0]
-                if (response.status === 200) {
-                    setNombreProyecto(res.ProjectName)
-                    setDescripcion(res.ProjectDescription)
-                    setMetaRecaudacion(res.FundingGoal.toString())
-                    setFechaHora(new Date(res.FundingDeadline))
-                    setCategoria(res.Category)
-                    setEmail(res.Email)
-                } else {
-                    Alert.alert('Error', 'No se han podido recibir los proyectos');
-                }
-            } catch (error) {
-                Alert.alert('Error', 'Algo ha salido mal');
-                console.error(error);
-            }
-        };
-
-        handleGetProject();
-    }, [editProyectId]);
-
-    const handleUpdate = async () => {
+    const handlePost = async () => {
+        const UserID = await AsyncStorage.getItem('userID');
         try {
-            if (!nombreProyecto || !descripcion || !metaRecaudacion  || !fechaHora || !categoria  || !editProyectId) {
+            if (!nombreProyecto || !descripcion || !metaRecaudacion  || !fechaHora || !categoria  || !UserID) {
                 Alert.alert('Error', 'Todos los campos son obligatorios');
                 return;
             }
             const storedUrl = await AsyncStorage.getItem('API_URL');
-            const response = await axios.put(`${storedUrl}/proyecto`, {
-                idProyect: editProyectId,
-                ProjectName: nombreProyecto,
-                ProjectDescription: descripcion,
-                FundingGoal: metaRecaudacion,
-                FundingDeadline: fechaHora.toISOString(),
-                Category: categoria,
+            const response = await axios.post(`${storedUrl}/proyecto`, {
+                titulo: nombreProyecto,
+                descripcion: descripcion,
+                dinero: metaRecaudacion,
+                fechaHora: fechaHora.toISOString(),
+                categoria: categoria,
+                idUser: UserID,
             });
 
-            console.log("Actualización exitosa");
-            Alert.alert('Éxito', 'Proyecto actualizado correctamente');
+            console.log("creacion exitosa");
+            Alert.alert('Éxito', 'Proyecto creado correctamente');
 
         } catch (error) {
-            Alert.alert('Error', 'Hubo un problema al actualizar el proyecto');
+            Alert.alert('Error', 'Hubo un problema al crear el proyecto');
             console.error(error);
         }
     };
@@ -102,7 +76,7 @@ const EditarProyecto = () => {
                     <Text
                         style={styles.titleText}
                     >
-                        Editar Proyecto
+                        Crear Proyecto
                     </Text>
                     <View>
                         <TextInput   
@@ -156,9 +130,9 @@ const EditarProyecto = () => {
                     </View>
                     <TouchableOpacity
                         style={styles.Button}
-                        onPress={handleUpdate}
+                        onPress={handlePost}
                     >
-                        <Text style={styles.buttonText}>Editar Proyecto</Text>
+                        <Text style={styles.buttonText}>Crear Proyecto</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.CancelButton}
@@ -258,4 +232,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default EditarProyecto;
+export default InsertarProyecto;

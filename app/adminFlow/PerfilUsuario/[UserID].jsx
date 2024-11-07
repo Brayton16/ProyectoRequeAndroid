@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
 import { Stack } from "expo-router";
-import NavBarDisplay from '../../components/navbarDisplay';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
@@ -8,118 +7,43 @@ import axios from "axios";
 import LottieView from 'lottie-react-native';
 import { Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-
-//TODO: Implementar borrado de cuenta
+import { useLocalSearchParams } from 'expo-router';
 
 export default function Profile() {
 
     const [userData, setUserData] = useState(null);
+    const { UserID } = useLocalSearchParams();
     const [loaded, setLoaded] =  useState(false);
     const [loadingAnimation, setLoadingAnimation] = useState('');
     const [modalCorreoVisible, setCorreoModalVisible] = useState(false);
     const [modalContraseñaVisible, setContraseñaModalVisible] = useState(false);
     const [modalTelefonoVisible, setTelefonoModalVisible] = useState(false);
-    const [modalAreaVisible, setModalAreaVisible] = useState(false);
-    const [modalSaldoVisible, setModalSaldoVisible] = useState(false);
+    const [modalRolVisible, setModalRolVisible] = useState(false);
+    const [modalDesactivarVisible, setModalDesactivarVisible] = useState(false);
     const [correo, setCorreo] = useState('')
     const [password, setPassword] = useState('')
     const [telefono, setTelefono] = useState('')
-    const [area, setArea] = useState('')
-    const [saldo, setSaldo] = useState('')
+    const [rol, setRol] = useState('')
+    const [desactivar, setDesactivar] = useState(false)
     
-    const animation1 = require('../../assets/Animation - 1730689921443.json')
-    const animation2 = require('../../assets/Animation - 1730691443181.json')
-    const animation3 = require('../../assets/Animation - 1730691572996.json')
+    const animation1 = require('../../../assets/Animation - 1730689921443.json')
+    const animation2 = require('../../../assets/Animation - 1730691443181.json')
+    const animation3 = require('../../../assets/Animation - 1730691572996.json')
 
-    const handleCorreoSubmit = async() => {
-        if(correo.includes('@estudiantec.cr')){
-            const email = correo;
-            const id = await AsyncStorage.getItem('userID');
-            const parsedUserID = parseInt(id, 10);
-            const storedUrl = await AsyncStorage.getItem('API_URL');
-            const url = `${storedUrl}/users/correo`;
-            try {
-                const response = await axios.put(url, 
-                    { UserID: parsedUserID, NewEmail: email },
-                );
-                handleGetUserData();
-                setCorreo('');
-                setCorreoModalVisible(false);
-            }catch (error) {
-                console.error('Error al actualizar el saldo:', error);
-            }
-        }else{
-            Alert.alert('Correo no válido', 'Por favor, ingrese un correo válido.');
-        }
+    const handleCorreoSubmit = () => {
+        console.log('Correo:', correo);
     };
-    const handlePasswordSubmit = async () => {
-        const pass = password;
-        const id = await AsyncStorage.getItem('userID');
-        const parsedUserID = parseInt(id, 10);
-        const storedUrl = await AsyncStorage.getItem('API_URL');
-        const url = `${storedUrl}/users/password`;
-        try {
-            const response = await axios.put(url, 
-                { UserID: parsedUserID, NewPassword: pass },
-            );
-            handleGetUserData();
-            setPassword('');
-            setContraseñaModalVisible(false);
-        }catch (error) {
-            console.error('Error al actualizar el saldo:', error);
-        }
+    const handlePasswordSubmit = () => {
+        console.log('Pass:', password);
     };
-    const handleTelefonoSubmit = async () => {
-        const tel = telefono;
-        const id = await AsyncStorage.getItem('userID');
-        const parsedUserID = parseInt(id, 10);
-        const storedUrl = await AsyncStorage.getItem('API_URL');
-        const url = `${storedUrl}/users/telefono`;
-        try {
-            const response = await axios.put(url, 
-                { UserID: parsedUserID, NewPhoneNumber: tel },
-            );
-            handleGetUserData();
-            setTelefono('');
-            setTelefonoModalVisible(false);
-        }catch (error) {
-            console.error('Error al actualizar el saldo:', error);
-        }
+    const handleTelefonoSubmit = () => {
+        console.log('Tel:', telefono);
     };
-    const handleAreaSubmit = async() => {
-        const workArea = area;
-        const id = await AsyncStorage.getItem('userID');
-        const parsedUserID = parseInt(id, 10);
-        const storedUrl = await AsyncStorage.getItem('API_URL');
-        const url = `${storedUrl}/users/area`;
-        try {
-            const response = await axios.put(url, 
-                { UserID: parsedUserID, NewArea: workArea },
-            );
-            handleGetUserData();
-            setArea('');
-            setModalAreaVisible(false);
-        }catch (error) {
-            console.error('Error al actualizar el saldo:', error);
-        }
+    const handleRolSubmit = () => {
+        console.log('Rol:', rol);
     };
-
-    const handleSaldoSubmit = async () => {
-        const saldoValue = saldo;
-        const id = await AsyncStorage.getItem('userID');
-        const parsedUserID = parseInt(id, 10);
-        const storedUrl = await AsyncStorage.getItem('API_URL');
-        const url = `${storedUrl}/users/money`;
-        try {
-            const response = await axios.put(url, 
-                { userID: parsedUserID, amount: saldoValue },
-            );
-            handleGetUserData();
-            setSaldo('');
-            setModalSaldoVisible(false)
-        }catch (error) {
-            console.error('Error al actualizar el saldo:', error);
-        }
+    const handleDesactivarSubmit = () => {
+        setDesactivar(false);
     };
     
     // Simulación de datos de usuario
@@ -135,34 +59,34 @@ export default function Profile() {
         IsActive: true,
         CreatedAt: "2024-09-17T22:35:59.417Z",
         Rol: 'Usuario',
-        ProfilePhoto: "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png-1-286x300.jpg"
-        }
-
-    const handleGetUserData = async () => {
-        const id = await AsyncStorage.getItem('userID');
-        const parsedUserID = parseInt(id, 10);
-        const storedUrl = await AsyncStorage.getItem('API_URL');
-        const animations = [animation1, animation2, animation3];
-        const randomIndex = Math.floor(Math.random() * animations.length);
-        setLoadingAnimation(animations[randomIndex]);
-        try {
-            const response = await axios.get(`${storedUrl}/users/id`, {
-                params: { userID: parsedUserID }
-            });
-    
-            if (response.status === 200) {
-                setUserData(response.data[0]);
-            } else {
-                Alert.alert('Error', 'No se han podido recibir los proyectos');
-            }
-            setLoaded(true)
-        } catch (error) {
-            Alert.alert('Error', 'Algo ha salido mal');
-            console.error(error);
-        } 
-    };
+        ProfilePhoto: 'https://scontent.fsjo10-1.fna.fbcdn.net/v/t39.30808-1/447462029_7509873185757609_8697984359719734285_n.jpg?stp=dst-jpg_s200x200&_nc_cat=111&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=nfAnNnqcq2kQ7kNvgHJRClu&_nc_zt=24&_nc_ht=scontent.fsjo10-1.fna&_nc_gid=AW1gDXCqQuhoYZWQBUFzfYU&oh=00_AYDGDgTp6qbD8zQBJDTBwOFOEXkZfa0rVn0YZE9-nmMQuQ&oe=672B9487'
+    }
 
     useEffect(() => {
+        const handleGetUserData = async () => {
+            const id = UserID;
+            const parsedUserID = parseInt(id, 10);
+            const storedUrl = await AsyncStorage.getItem('API_URL');
+            const animations = [animation1, animation2, animation3];
+            const randomIndex = Math.floor(Math.random() * animations.length);
+            setLoadingAnimation(animations[randomIndex]);
+            try {
+                const response = await axios.get(`${storedUrl}/users/id`, {
+                    params: { userID: parsedUserID }
+                });
+        
+                if (response.status === 200) {
+                    setUserData(response.data[0]);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir los proyectos');
+                }
+                setLoaded(true)
+            } catch (error) {
+                Alert.alert('Error', 'Algo ha salido mal');
+                console.error(error);
+            } 
+        };
+
         handleGetUserData();
     }, []);
 
@@ -179,7 +103,7 @@ export default function Profile() {
                         <Text style={styles.profileName}>{userData?.FirstName} {userData?.LastName}</Text>
                         <View style={styles.moneyContainer}>
                             <Text style={styles.moneyText}>Saldo: {userData?.DigitalMoney}</Text>
-                            <Image style={styles.moneyImage} source={require('../../assets/goofycoin.png')}/>
+                            <Image style={styles.moneyImage} source={require('../../../assets/goofycoin.png')}/>
                         </View>
                     </View>
                     <View style={styles.infoContainer}>
@@ -208,8 +132,8 @@ export default function Profile() {
                             <TouchableOpacity><Text style={styles.editLink} onPress={() => setModalAreaVisible(true)}>Cambiar área</Text></TouchableOpacity>
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.button} onPress={() => setModalSaldoVisible(true)}>
-                        <Text style={styles.buttonText}>Recargar GoofyCoins</Text>
+                    <TouchableOpacity style={styles.button} onPress={() => setModalDesactivarVisible(true)}>
+                        <Text style={styles.buttonText}>Desactivar cuenta</Text>
                     </TouchableOpacity>
                     <Modal
                         animationType="fade"
@@ -222,7 +146,7 @@ export default function Profile() {
                                 <Text style={styles.modalTitle}>Digita el nuevo correo</Text>
                                 <TextInput
                                     style={styles.input}
-                                    placeholder="correo@example.com"
+                                    placeholder="correpo@example.com"
                                     value={correo}
                                     onChangeText={setCorreo}
                                 />
@@ -286,34 +210,31 @@ export default function Profile() {
                     <Modal
                         animationType="fade"
                         transparent={true}
-                        visible={modalAreaVisible}
-                        onRequestClose={() => setModalAreaVisible(false)}
+                        visible={modalRolVisible}
+                        onRequestClose={() => setModalRolVisible(false)}
                     >
                         <View style={styles.modalContainer}>
                             <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}>Seleccione la nueva área</Text>
+                                <Text style={styles.modalTitle}>Seleccione el nuevo rol</Text>
                                 <View style={styles.Picker}>
                                     <Picker
                                         style={styles.Item}
                                         mode={"dropdown"}
-                                        selectedValue={area}
-                                        onValueChange={(itemValue) => setArea(itemValue)} // Cambiado de onChangeText a onValueChange
+                                        selectedValue={rol}
+                                        onValueChange={(itemValue) => setRol(itemValue)} // Cambiado de onChangeText a onValueChange
                                     >
                                         <Picker.Item label="Área de trabajo" value=""/>
-                                        <Picker.Item label="Tecnología" value="Tecnología" />
-                                        <Picker.Item label="Salud" value="Salud" />
-                                        <Picker.Item label="Entretenimiento" value="Entretenimiento" />
-                                        <Picker.Item label="Educación" value="Educación" />
-                                        <Picker.Item label="Energía" value="Energía" />
-                                        <Picker.Item label="Arte" value="Arte" />
-                                        <Picker.Item label="Investigación" value="Investigación" />
-                                        <Picker.Item label="Cocina" value="Cocina" />
+                                        <Picker.Item label="Usuario" value="Usuario"/>
+                                        <Picker.Item label="Administrador" value="Administrador"/>
+                                        <Picker.Item label="Analista" value="Analista"/>
+                                        <Picker.Item label="Encargado" value="Encargado"/>
+                                        <Picker.Item label="Supervisor" value="Supervisor"/>
                                     </Picker>
                                 </View>
-                                <TouchableOpacity style={styles.submitButton} onPress={handleAreaSubmit}>
+                                <TouchableOpacity style={styles.submitButton} onPress={handleRolSubmit}>
                                     <Text style={styles.submitButtonText}>Enviar</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.cancelButton} onPress={() => setModalAreaVisible(false)}>
+                                <TouchableOpacity style={styles.cancelButton} onPress={() => setModalRolVisible(false)}>
                                     <Text style={styles.cancelButtonText}>Cancelar</Text>
                                 </TouchableOpacity>
                             </View>
@@ -322,22 +243,16 @@ export default function Profile() {
                     <Modal
                         animationType="fade"
                         transparent={true}
-                        visible={modalSaldoVisible}
-                        onRequestClose={() => setModalSaldoVisible(false)}
+                        visible={modalDesactivarVisible}
+                        onRequestClose={() => setModalDesactivarVisible(false)}
                     >
                         <View style={styles.modalContainer}>
                             <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}>Digita el saldo que desea recargar</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="500"
-                                    value={saldo}
-                                    onChangeText={setSaldo}
-                                />
-                                <TouchableOpacity style={styles.submitButton} onPress={handleSaldoSubmit}>
-                                    <Text style={styles.submitButtonText}>Enviar</Text>
+                                <Text style={styles.modalTitle}>¿Está seguro que quiere desactivar este usuario?</Text>
+                                <TouchableOpacity style={styles.submitButton} onPress={handleDesactivarSubmit}>
+                                    <Text style={styles.submitButtonText}>Estoy seguro</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.cancelButton} onPress={() => setModalSaldoVisible(false)}>
+                                <TouchableOpacity style={styles.cancelButton} onPress={() => setModalDesactivarVisible(false)}>
                                     <Text style={styles.cancelButtonText}>Cancelar</Text>
                                 </TouchableOpacity>
                             </View>

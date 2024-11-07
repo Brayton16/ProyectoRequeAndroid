@@ -4,10 +4,12 @@ import { Stack, useRouter } from "expo-router";
 import { Picker } from '@react-native-picker/picker';
 import axios from "axios";
 import { Alert } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function Registro(){
-    
+
+
     const router = useRouter()
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -24,10 +26,12 @@ export default function Registro(){
             router.push('/login/LogIn');
         }
     };
-
+    
+    // Llama a la función de generación de imagen
+    generateImage("Retrato de una persona usando IA basado en el nombre del usuario");
     const handleRegister = async () => {
         try {
-
+            const storedUrl = await AsyncStorage.getItem('API_URL');
             if(password != confirmPassword){
                 Alert.alert('Error', 'Las contraseñas no coinciden');
                 return;
@@ -38,7 +42,7 @@ export default function Registro(){
                 return; 
             }
 
-            const response = await axios.post('http://localhost:3001/users', {
+            const response = await axios.post(`${storedUrl}/users`, {
                 nombre: name,
                 apellidos: lastName,
                 cedula: cedula,
@@ -121,10 +125,14 @@ export default function Registro(){
                                     onValueChange={(itemValue) => setSelectedOption(itemValue)} // Cambiado de onChangeText a onValueChange
                                 >
                                     <Picker.Item label="Área de trabajo" value=""/>
-                                    <Picker.Item label="Tecnología" value="tecnología"/>
-                                    <Picker.Item label="Arte" value="arte"/>
-                                    <Picker.Item label="Entretenimiento" value="entretenimiento"/>
-                                    <Picker.Item label="Investigación" value="investigación"/>
+                                    <Picker.Item label="Tecnología" value="Tecnología" />
+                                    <Picker.Item label="Salud" value="Salud" />
+                                    <Picker.Item label="Entretenimiento" value="Entretenimiento" />
+                                    <Picker.Item label="Educación" value="Educación" />
+                                    <Picker.Item label="Energía" value="Energía" />
+                                    <Picker.Item label="Arte" value="Arte" />
+                                    <Picker.Item label="Investigación" value="Investigación" />
+                                    <Picker.Item label="Cocina" value="Cocina" />
                                 </Picker>
                             </View>
 
@@ -133,12 +141,6 @@ export default function Registro(){
                                 placeholder="Dinero inicial"
                                 value={dineroInicial}
                                 onChangeText={setDineroInicial}
-                            />
-                            <TextInput
-                                style={styles.Items} 
-                                placeholder="Teléfono"
-                                value={telefono}
-                                onChangeText={setTelefono}
                             />
                             <TextInput
                                 style={styles.Items} 
@@ -182,7 +184,7 @@ const styles = StyleSheet.create({
     },
     container: {
         width: 'auto',
-        height: 800,
+        height: 750,
         backgroundColor: 'white',
         borderWidth: 1,
         borderColor: 'black',
@@ -275,7 +277,8 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 30,
         fontFamily: 'SpaceGrotesk',
-        marginBottom: 20
+        marginBottom: 20,
+        marginTop: 50
     }
 })
 

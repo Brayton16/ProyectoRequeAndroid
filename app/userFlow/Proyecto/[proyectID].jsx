@@ -8,6 +8,8 @@ import  { Alert } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import LottieView from 'lottie-react-native';
 
+//TODO: Implementar la respuesta de comentario del creador (Tengo que hacer un componente similar a este para mis proyectos)
+
 const ProjectDetail = () => {
     const { proyectID } = useLocalSearchParams();
     const [comments, setComments] = useState([])
@@ -25,15 +27,58 @@ const ProjectDetail = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
+    const [modalDonacionVisible, setModalDonacionVisible] = useState(false);
+    const [donacion, setDonacion] = useState(0);
 
     const animation1 = require('../../../assets/Animation - 1730689921443.json')
     const animation2 = require('../../../assets/Animation - 1730691443181.json')
     const animation3 = require('../../../assets/Animation - 1730691572996.json')
 
-    const image1 = "https://images.ctfassets.net/wn7ipiv9ue5v/NwgElAZU8ZdLmW6v7812Y/41f23ac2004e4db655439c8010ba22f2/3-4_GTA--Gen_9_Vista_Reshoot_CF__3_.jpg"
-    const image2 = "https://i.blogs.es/75acf7/gta-5-policia/1366_2000.jpeg"
-    const image3 = "https://sm.ign.com/ign_es/news/g/gta-5-lose/gta-5-loses-steam-deck-verification-as-rockstar-claims-valve_69tc.jpg"
+    const getImage = (category) => {
+        const images = {
+            'Entretenimiento': [
+                'https://media.gettyimages.com/id/638651186/es/foto/festival-selfie.jpg?s=612x612&w=0&k=20&c=GJR3_eFkeyDiiXdtSjJi5FeuNtOTeM0hffvTHes6AzA=', 
+                'https://media.gettyimages.com/id/1393796813/es/foto/amigos-jugando-juegos-de-computadora.jpg?s=612x612&w=0&k=20&c=sSzARMq2kNIIOiw_ZdfWKP3wr-A78GU-xfRwH0M3ttY=', 
+                'https://media.gettyimages.com/id/638651064/es/foto/ambientes-del-festival.jpg?s=612x612&w=0&k=20&c=A5rZ87-6APOzqVSuK_EmZ0vit-c9z4EWd0Yeht06m7s='],
+            'Tecnología': [
+                'https://media.gettyimages.com/id/1407293956/es/foto/silhouette-of-a-man-interacting-with-virtual-computer-graphics.jpg?s=612x612&w=0&k=20&c=BEKWPEkJjYNOxGv_Izdchb-KhIOZwCokS2FGpTUaNIU=',
+                'https://media.gettyimages.com/id/1059088660/es/foto/garantizaremos-que-su-pregunta-obtiene-respuesta.jpg?s=612x612&w=0&k=20&c=ca9ma5FxudtqSKoe_66cYqHRcx73Vspm6bln55evB2s=',
+                'https://media.gettyimages.com/id/1397047849/es/foto/placa-de-circuito-abstracto-con-muchos-micro-chips.jpg?s=612x612&w=0&k=20&c=vOXJbKCnPd6yRpTPTQNbcQFi9PcdIKnchCk7p6urcp0='
+            ],
+            'Salud': [
+                'https://media.gettyimages.com/id/1473675453/es/foto/dieta-bien-balanceada-y-control-de-la-presi%C3%B3n-arterial-para-el-cuidado-del-coraz%C3%B3n.jpg?s=612x612&w=0&k=20&c=zotnFKWQunW928VHmoNFPqn05lALF7cu7VCo7KtbDXE=',
+                'https://media.gettyimages.com/id/1988844230/es/foto/paediatric-medical-check-up.jpg?s=612x612&w=0&k=20&c=T8YNCimSQyj8VvXMIr3QcpEVQDfn2VplUUIWOUbq2Vg=',
+                'https://media.gettyimages.com/id/592647720/es/foto/monitorear-atentamente-los-signos-vitales-de-su-paciente.jpg?s=612x612&w=0&k=20&c=AmPPvjNVCQ18NYbi1hsMRycbSBFx_WEl3V7VPMDejrw='
+            ],
+            'Educación': [
+                'https://media.gettyimages.com/id/1371160686/es/foto/gente-de-negocios-viendo-una-presentaci%C3%B3n-en-la-pizarra.jpg?s=612x612&w=0&k=20&c=pRHw1mTmMlX7dT2FWsvjEnRkImWNS9NuDNs6EYX9Ihk=',
+                'https://media.gettyimages.com/id/1346504071/es/foto/divertirse-en-la-escuela.jpg?s=612x612&w=0&k=20&c=rIkmsV97w_OkVTOimfqkIrldsaX8aR8mKM4JFjs-N2U=',
+                'https://media.gettyimages.com/id/157719429/es/foto/grupo-de-estudiantes-de-la-escuela-media-de-trabajo-en-proyectos-juntos.jpg?s=612x612&w=0&k=20&c=isKp0bUbYKbss8Z0ihAJ3bPG4nrrhXoPkHrLjXSTHZ0='
+            ],
+            'Energía': [
+                'https://media.gettyimages.com/id/1401906779/es/foto/blocks.jpg?s=612x612&w=0&k=20&c=nOezjSquzXJZOOnx2FiRwZSIkrbSWlnKBHL58qrefxM=',
+                'https://media.gettyimages.com/id/1405880267/es/foto/dos-ingenieros-instalando-paneles-solares-en-el-techo.jpg?s=612x612&w=0&k=20&c=dGzNdSO0ye_1RhIa2iXwx4Z5CNPN7Idj4LqHMBrDJEE=',
+                'https://media.gettyimages.com/id/1411130003/es/foto/two-rope-access-technicians-working-on-higher-wind-turbine-blades.jpg?s=612x612&w=0&k=20&c=4UmV5ma4PePbOh_oOxqAqDBRNLXUMFqs5pFfuSmk2cI='
+            ],
+            'Arte': [
+                'https://media.gettyimages.com/id/1190200652/es/foto/las-manos-del-pintor.jpg?s=612x612&w=0&k=20&c=-h1bcEnJwIcqm85LwwCteq9OewXvdCnLyV5qVsgDhUM=',
+                'https://media.gettyimages.com/id/10117478/es/foto/orchestra-violinist.jpg?s=612x612&w=0&k=20&c=RnuRISxG0nrnp7yDJtbQXEA0YlWeuqufloBNag0rSEs=',
+                'https://media.gettyimages.com/id/1321486723/es/foto/hombre-japon%C3%A9s-pasando-la-ma%C3%B1ana-del-fin-de-semana-pintando-en-su-dormitorio-en-casa.jpg?s=612x612&w=0&k=20&c=pkUTYGE54jgILIv84NwpM6vLUHsFYORVfUJqIiYxbu0='
+            ],
+            'Investigación': [
+                'https://media.gettyimages.com/id/1133887502/es/foto/papeleo-y-manos-en-una-mesa-de-la-sala-de-juntas-en-una-presentaci%C3%B3n-de-negocios-o-seminario.jpg?s=612x612&w=0&k=20&c=_EkrB0rQlrQJLAQQT5ZiFTsgNVLfdUpDw8ZeTbWQb5w=',
+                'https://media.gettyimages.com/id/468877597/es/foto/electrotherapy.jpg?s=612x612&w=0&k=20&c=Q07_rm21qG4fjT-OSQvMx1at9XNV1BScpzjYaR1VTaI=',
+                'https://media.gettyimages.com/id/872019580/es/foto/hombres-viendo-una-gran-pantalla-de-informaci%C3%B3n.jpg?s=612x612&w=0&k=20&c=8sSXhp_4KiuSOehJ_Smgb-W56gzRhAOOJdulySHgeJI='
+            ],
+            'Cocina': [
+                'https://media.gettyimages.com/id/913931820/es/foto/chef-en-cocina-de-restaurante-de-cocina-de-alta-llamas-ardientes.jpg?s=612x612&w=0&k=20&c=jTObHXwBm9tHIYHV_7lFFH3nCYzeKrg-DYTx9FVHpqA=',
+                'https://media.gettyimages.com/id/1446478827/es/foto/un-chef-est%C3%A1-cocinando-en-la-cocina-de-su-restaurante.jpg?s=612x612&w=0&k=20&c=oOl4H1nVEOSAydptJMtyNcE6eAgndvPy4f4VhcjH55Q=',
+                'https://media.gettyimages.com/id/1062249974/es/foto/amigos-viviendo-y-cocinar-juntos.jpg?s=612x612&w=0&k=20&c=hZqJOQtkCnHjrWlm0eM9yHm9o9duchkIoNnC9lTTw-c='
+            ],
+        };
 
+        setImages(images[category]);  // Ajusta la imagen si coincide con el área de trabajo
+    };
     
     const handleCommentSubmit = async () => {
         const storedUrl = await AsyncStorage.getItem('API_URL');
@@ -67,6 +112,28 @@ const ProjectDetail = () => {
         setRating(0);
     };
 
+    const handleDonacionSubmit = async () => {
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const storedUserID = await AsyncStorage.getItem('userID')
+        const url = `${storedUrl}/users/donation`
+        const data = {
+            projectID: proyectID,
+            donation: donacion,
+            userID: storedUserID
+        }
+        try{
+            const response = await axios.post(url, data)
+            if(response.status === 200 || response.status === 201){
+                Alert.alert('Donación', 'Se ha realizado la donación correctamente.');
+            }
+        }catch (error) {
+            Alert.alert('Error', 'Ocurrió un error al realizar la donación.');
+            console.log(error)
+        }
+        setModalDonacionVisible(false);
+        setDonacion(0);
+    };
+
     const handleRating = (value) => {
         setRating(value);
     };
@@ -97,7 +164,7 @@ const ProjectDetail = () => {
                     setMetaRecaudacion(res.FundingGoal.toString())
                     setRecaudado(res.CurrentCollection.toString())
                     setDaysLeft(calculateDaysLeft(res.FundingDeadline).toString())
-                    setImages([image1, image2, image3])
+                    getImage(res.Category)
                 }else{
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
@@ -241,8 +308,32 @@ const ProjectDetail = () => {
                             </View>
                         </View>
                     </Modal>
-                    <TouchableOpacity style={styles.donateButton}>
-                        <Text style={styles.donateButtonText}>Donar</Text>
+                    <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={modalDonacionVisible}
+                        onRequestClose={() => setModalDonacionVisible(false)}
+                    >
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>Digita el monto que deseas donar</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="500"
+                                    value={donacion}
+                                    onChangeText={setDonacion}
+                                />
+                                <TouchableOpacity style={styles.submitButton} onPress={handleDonacionSubmit}>
+                                    <Text style={styles.submitButtonText}>Donar</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.cancelButton} onPress={() => setModalDonacionVisible(false)}>
+                                    <Text style={styles.cancelButtonText}>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+                    <TouchableOpacity style={styles.donateButton} onPress={() => setModalDonacionVisible(true)}>
+                        <Text style={styles.donateButtonText} >Donar</Text>
                     </TouchableOpacity>
                 </ScrollView>
             ):(

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import NavBarDisplay from '../../components/navbarDisplay';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,15 +8,38 @@ import { Alert } from 'react-native';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
+import LottieView from 'lottie-react-native';
+
+//TODO: Implementar borrado de proyectos
 
 function ProjectCard({ project }) {
     const router = useRouter();
-    
+    const [image, setImage] = useState('https://media.gettyimages.com/id/1226328537/es/vector/soporte-de-posici%C3%B3n-de-imagen-con-un-icono-de-c%C3%A1mara-gris.jpg?s=612x612&w=0&k=20&c=8igCt_oe2wE-aP0qExUDfwicSNUCb4Ho9DiKCq0rSaA=')
     const handleEdit = (editProyectId) => {
         router.push(`/userFlow/EditarProyecto/${editProyectId}`);
     };
     const handleDonations = (proyectID) => {
         router.push(`/userFlow/DonacionesProyecto/${proyectID}`);
+    };
+
+    useEffect(() => {
+        getImage()
+    }, [])
+
+    const getImage = () => {
+        // Configura la imagen según el área de trabajo
+        const images = {
+            'Entretenimiento': 'https://media.gettyimages.com/id/638651186/es/foto/festival-selfie.jpg?s=612x612&w=0&k=20&c=GJR3_eFkeyDiiXdtSjJi5FeuNtOTeM0hffvTHes6AzA=',
+            'Tecnología': 'https://media.gettyimages.com/id/1407293956/es/foto/silhouette-of-a-man-interacting-with-virtual-computer-graphics.jpg?s=612x612&w=0&k=20&c=BEKWPEkJjYNOxGv_Izdchb-KhIOZwCokS2FGpTUaNIU=',
+            'Salud': 'https://media.gettyimages.com/id/1473675453/es/foto/dieta-bien-balanceada-y-control-de-la-presi%C3%B3n-arterial-para-el-cuidado-del-coraz%C3%B3n.jpg?s=612x612&w=0&k=20&c=zotnFKWQunW928VHmoNFPqn05lALF7cu7VCo7KtbDXE=',
+            'Educación': 'https://media.gettyimages.com/id/1371160686/es/foto/gente-de-negocios-viendo-una-presentaci%C3%B3n-en-la-pizarra.jpg?s=612x612&w=0&k=20&c=pRHw1mTmMlX7dT2FWsvjEnRkImWNS9NuDNs6EYX9Ihk=',
+            'Energía': 'https://media.gettyimages.com/id/1401906779/es/foto/blocks.jpg?s=612x612&w=0&k=20&c=nOezjSquzXJZOOnx2FiRwZSIkrbSWlnKBHL58qrefxM=',
+            'Arte': 'https://media.gettyimages.com/id/1190200652/es/foto/las-manos-del-pintor.jpg?s=612x612&w=0&k=20&c=-h1bcEnJwIcqm85LwwCteq9OewXvdCnLyV5qVsgDhUM=',
+            'Investigación': 'https://media.gettyimages.com/id/1133887502/es/foto/papeleo-y-manos-en-una-mesa-de-la-sala-de-juntas-en-una-presentaci%C3%B3n-de-negocios-o-seminario.jpg?s=612x612&w=0&k=20&c=_EkrB0rQlrQJLAQQT5ZiFTsgNVLfdUpDw8ZeTbWQb5w=',
+            'Cocina': 'https://media.gettyimages.com/id/913931820/es/foto/chef-en-cocina-de-restaurante-de-cocina-de-alta-llamas-ardientes.jpg?s=612x612&w=0&k=20&c=jTObHXwBm9tHIYHV_7lFFH3nCYzeKrg-DYTx9FVHpqA=',
+        };
+
+        setImage(images[project.Category]); 
     };
 
     return(
@@ -36,7 +59,7 @@ function ProjectCard({ project }) {
             <View style={styles.imageContainer}>
                 <Image
                     style={styles.image}
-                    source={{ uri:  "https://images.ctfassets.net/wn7ipiv9ue5v/NwgElAZU8ZdLmW6v7812Y/41f23ac2004e4db655439c8010ba22f2/3-4_GTA--Gen_9_Vista_Reshoot_CF__3_.jpg" }}
+                    source={{ uri: image }}
                     resizeMode="cover"
                 />
             </View>
@@ -58,24 +81,34 @@ function ProjectCard({ project }) {
 }
 
 export default function MisProyectos() {
+    const router = useRouter();
     const [projects, setProjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [userID, setUserID] = useState(0);
-    
-    
+    const [loaded, setLoaded] =  useState(false);
+    const [loadingAnimation, setLoadingAnimation] = useState('');
+
+    const animation1 = require('../../assets/Animation - 1730689921443.json')
+    const animation2 = require('../../assets/Animation - 1730691443181.json')
+    const animation3 = require('../../assets/Animation - 1730691572996.json')
+
+
     const handleGetProjects = async (filter) => {
         const storedUrl = await AsyncStorage.getItem('API_URL');
         const id = await AsyncStorage.getItem('userID');
         const parsedUserID = parseInt(id, 10); 
         setUserID(parsedUserID);
+        const animations = [animation1, animation2, animation3];
+        const randomIndex = Math.floor(Math.random() * animations.length);
+        setLoadingAnimation(animations[randomIndex]);
+        const url = `${storedUrl}/proyectos/id?userID=${parsedUserID}&query=${filter}`
         
-        const url = `${storedUrl}/proyectos/usuario?userID=${parsedUserID}&query=${filter}`
-         
         try {
             if(filter === ""){
                 const response = await axios.get(`${storedUrl}/proyectos/usuario?userID=${parsedUserID}`);
                 if (response.status === 200) {
                     setProjects(response.data);
+                    setLoaded(true)
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
@@ -83,6 +116,7 @@ export default function MisProyectos() {
                 const response = await axios.get(url);
                 if (response.status === 200) {
                     setProjects(response.data);
+                    setLoaded(true)
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
@@ -106,6 +140,7 @@ export default function MisProyectos() {
                 const response = await axios.get(`${storedUrl}/proyectos/usuario/categoria?userID=${userID}`);
                 if (response.status === 200) {
                     setProjects(response.data);
+                    setLoaded(true)
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
@@ -113,6 +148,7 @@ export default function MisProyectos() {
                 const response = await axios.get(url);
                 if (response.status === 200) {
                     setProjects(response.data);
+                    setLoaded(true)
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
@@ -131,6 +167,7 @@ export default function MisProyectos() {
                 const response = await axios.get(`${storedUrl}/proyectos/usuario/objetivo?userID=${userID}`);
                 if (response.status === 200) {
                     setProjects(response.data);
+                    setLoaded(true)
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
@@ -138,6 +175,7 @@ export default function MisProyectos() {
                 const response = await axios.get(url);
                 if (response.status === 200) {
                     setProjects(response.data);
+                    setLoaded(true)
                 } else {
                     Alert.alert('Error', 'No se han podido recibir los proyectos');
                 }
@@ -202,69 +240,84 @@ export default function MisProyectos() {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.container} >
                 <Stack.Screen options={{ headerShown: false }} />
-                <View style={styles.contentContainer}>
-                    <NavBarDisplay/>
-                    <ScrollView style={{marginTop: 80, marginHorizontal: 30}} showsVerticalScrollIndicator={false}>
-                        <ScrollView horizontal={true} style={styles.UpperfilterContainer}>
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Tecnología")}>
-                                <Text style={styles.filterButtonText}>Tecnología</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Salud")}>
-                                <Text style={styles.filterButtonText}>Salud</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Entretenimiento")}>
-                                <Text style={styles.filterButtonText}>Entretenimiento</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Educación")}>
-                                <Text style={styles.filterButtonText}>Educación</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Energía")}>
-                                <Text style={styles.filterButtonText}>Energía</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Arte")}>
-                                <Text style={styles.filterButtonText}>Arte</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Investigación")}>
-                                <Text style={styles.filterButtonText}>Investigación</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Cocina")}>
-                                <Text style={styles.filterButtonText}>Cocina</Text>
-                            </TouchableOpacity>                    
+                {loaded ? (
+                    <View style={styles.contentContainer}>
+                        <NavBarDisplay/>
+                        <ScrollView style={{marginTop: 80, marginHorizontal: 30}} showsVerticalScrollIndicator={false}>
+                            <ScrollView horizontal={true} style={styles.UpperfilterContainer}>
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Tecnología")}>
+                                    <Text style={styles.filterButtonText}>Tecnología</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Salud")}>
+                                    <Text style={styles.filterButtonText}>Salud</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Entretenimiento")}>
+                                    <Text style={styles.filterButtonText}>Entretenimiento</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Educación")}>
+                                    <Text style={styles.filterButtonText}>Educación</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Energía")}>
+                                    <Text style={styles.filterButtonText}>Energía</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Arte")}>
+                                    <Text style={styles.filterButtonText}>Arte</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Investigación")}>
+                                    <Text style={styles.filterButtonText}>Investigación</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("Cocina")}>
+                                    <Text style={styles.filterButtonText}>Cocina</Text>
+                                </TouchableOpacity>                    
+                            </ScrollView>
+                            <View style={styles.filterContainer}>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleGetProjects("")}>
+                                    <Text style={styles.filterButtonText}> General</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterFundingGoal(1000)}>
+                                    <Text style={styles.filterButtonText}>Recaudado</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterCollection(1000)}>
+                                    <Text style={styles.filterButtonText}>Meta</Text>
+                                </TouchableOpacity>                    
+                                <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterLimitDate("10/12/2024")}>
+                                    <Text style={styles.filterButtonText}>Fecha límite</Text>
+                                </TouchableOpacity>                    
+                            </View>
+                            <View style={styles.SearchBar}>
+                                <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} onPress={() => handleGetProjects(searchQuery)}/>
+                                <TextInput
+                                    style={{fontFamily: 'SpaceGrotesk', paddingHorizontal: 5, flex: 1}}
+                                    placeholder="Buscar proyectos"
+                                    placeholderTextColor={'black'}
+                                    value={searchQuery}
+                                    onChangeText={setSearchQuery}
+                                    onSubmitEditing={() => handleGetProjects(searchQuery)}
+                                />
+                            </View>
+                            {projects ? projects.map((project) => (
+                                <ProjectCard key={project.ProjectID} project={project} />
+                            )) : <Text style={styles.text}>Cargando proyectos...</Text>}
                         </ScrollView>
-                        <View style={styles.filterContainer}>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleGetProjects("")}>
-                                <Text style={styles.filterButtonText}> General</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterFundingGoal(1000)}>
-                                <Text style={styles.filterButtonText}>Recaudado</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterCollection(1000)}>
-                                <Text style={styles.filterButtonText}>Meta</Text>
-                            </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterLimitDate("10/12/2024")}>
-                                <Text style={styles.filterButtonText}>Fecha límite</Text>
-                            </TouchableOpacity>                    
-                        </View>
-                        <View style={styles.SearchBar}>
-                            <Ionicons name="search" size={20} color="black" style={{marginRight: 10, marginLeft: 2}} onPress={() => handleGetProjects(searchQuery)}/>
-                            <TextInput
-                                style={{fontFamily: 'SpaceGrotesk', paddingHorizontal: 5, flex: 1}}
-                                placeholder="Buscar proyectos"
-                                placeholderTextColor={'black'}
-                                value={searchQuery}
-                                onChangeText={setSearchQuery}
-                                
-                            />
-                        </View>
-                        {projects ? projects.map((project) => (
-                            <ProjectCard key={project.ProjectID} project={project} />
-                        )) : <Text style={styles.text}>Cargando proyectos...</Text>}
-                    </ScrollView>
-                </View>
-                <TouchableOpacity style={styles.floatingButton}>
+                    </View>
+                ):(
+                    <View style={styles.loadingContainer}>
+                        <LottieView 
+                            source={loadingAnimation} 
+                            autoPlay 
+                            loop 
+                            style={styles.lottie}
+                        />
+                    </View>
+                )}
+            </View>
+            {loaded ? (
+                <TouchableOpacity style={styles.floatingButton} onPress={() => router.push('../userFlow/InsertarProyecto/Insertar')}>
                     <Ionicons name="add" size={50} color="#ffffff" />
                 </TouchableOpacity>
-            </View>
+            ):(
+                <View></View>
+            )}
         </GestureHandlerRootView>
     );
 }
@@ -430,6 +483,11 @@ const styles = StyleSheet.create({
         elevation: 3,
         flexDirection: 'row',
         alignItems: 'center',
-    }
+    },
+    lottie: {
+        width: 400,
+        height: 400,
+        marginTop: 200,
+    },
 });
 

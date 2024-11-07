@@ -38,7 +38,7 @@ export default function ProjectHistorial() {
                             <View style={styles.historialItem} key={donation.DonationID}>
                                 <Image
                                     style={styles.historialImage}
-                                    source={ {uri:'https://scontent.fsjo10-1.fna.fbcdn.net/v/t39.30808-1/447462029_7509873185757609_8697984359719734285_n.jpg?stp=dst-jpg_s200x200&_nc_cat=111&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=nfAnNnqcq2kQ7kNvgHJRClu&_nc_zt=24&_nc_ht=scontent.fsjo10-1.fna&_nc_gid=AW1gDXCqQuhoYZWQBUFzfYU&oh=00_AYDGDgTp6qbD8zQBJDTBwOFOEXkZfa0rVn0YZE9-nmMQuQ&oe=672B9487'}}
+                                    source={ {uri:'https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png-1-286x300.jpg'}}
                                 />
                                 <View style={styles.historialTextContainer}>
                                     <Text style={styles.providerText}>¡{donation.DonorFirstName} {donation.DonorLastName} te ha donado!</Text>
