@@ -84,7 +84,6 @@ export const getProyectsByLimitDate = async (req, res) => {
     try {
         const pool = await getConnection(); // Asumiendo que esta es tu función para obtener conexión a la base de datos
         const result = await pool.request()
-            .input("SearchQuery", sql.DateTime, query || '') // Usa el parámetro de consulta de la búsqueda, o una cadena vacía si no se proporciona
             .execute('GetActiveProjectsByLimitDate');
         res.json(result.recordset); // Envía los datos como JSON
     } catch (error) {
@@ -160,7 +159,6 @@ export const getUserProjectsByLimitDate = async (req, res) => {
         const pool = await getConnection(); // Asumiendo que esta es tu función para obtener conexión a la base de datos
         const result = await pool.request()
             .input("UserID", sql.Int, userID)
-            .input("SearchQuery", sql.DateTime, query || '') // Usa el parámetro de consulta de la búsqueda, o una cadena vacía si no se proporciona
             .execute('GetActiveProjectByLimitDate');
         res.json(result.recordset); // Envía los datos como JSON
     } catch (error) {
