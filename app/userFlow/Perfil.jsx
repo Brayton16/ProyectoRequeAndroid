@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import NavBarDisplay from '../../components/navbarDisplay';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,6 +32,7 @@ export default function Profile() {
     const animation2 = require('../../assets/Animation - 1730691443181.json')
     const animation3 = require('../../assets/Animation - 1730691572996.json')
 
+    const router = useRouter();
     const handleCorreoSubmit = async() => {
         if(correo.includes('@estudiantec.cr')){
             const email = correo;
@@ -127,18 +128,20 @@ export default function Profile() {
         const id = await AsyncStorage.getItem('userID');
         const parsedUserID = parseInt(id, 10);
         const storedUrl = await AsyncStorage.getItem('API_URL');
+        const activo = userData.IsActive === true ? 0 : 1
         const url = `${storedUrl}/users/activate`;
         try {
             const response = await axios.put(url,
                 { 
-                    UserID: parsedUserID,
-                    IsActive: userData.IsActive
+                    userID: parsedUserID,
+                    isActive: activo
                 },
             );
             Alert.alert('Cuenta borrada', 'La cuenta ha sido borrada.');
             setModalBorrarCuenta(false);
+            router.push('main/MainPage')
         }catch (error) {
-            console.error('Error al actualizar el saldo:', error);
+            console.error('Error al borrar cuenta:', error);
         }
     };
     
@@ -230,6 +233,9 @@ export default function Profile() {
                     </View>
                     <TouchableOpacity style={styles.button} onPress={() => setModalSaldoVisible(true)}>
                         <Text style={styles.buttonText}>Recargar GoofyCoins</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={() => setModalBorrarCuenta(true)}>
+                        <Text style={styles.buttonText}>Borrar Cuenta</Text>
                     </TouchableOpacity>
                     <Modal
                         animationType="fade"
