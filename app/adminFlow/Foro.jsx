@@ -21,12 +21,13 @@ export default function Forum() {
     }
 
     const handleInsertForum = () => {
-        router.push('/userFlow/CrearForo/crear');
+        router.push('/adminFlow/CrearForo/crear');
     }
 
-    handleGetPost = async (foroID) => {
-        router.push(`/userFlow/VerForo/${foroID}`);
+    const handleGetPost = (foroID) => {
+        router.push(`/adminFlow/VerForo/${foroID}`);
     }
+    
 
     useFocusEffect(
         useCallback(() => {

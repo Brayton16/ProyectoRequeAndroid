@@ -271,13 +271,13 @@ export default function Proyectos() {
                             <TouchableOpacity style={styles.filterButton} onPress={() => handleFilter("")}>
                                 <Text style={styles.filterButtonText}> General</Text>
                             </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterFundingGoal(1000)}>
+                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterFundingGoal()}>
                                 <Text style={styles.filterButtonText}>Recaudado</Text>
                             </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterCollection(1000)}>
+                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterCollection()}>
                                 <Text style={styles.filterButtonText}>Meta</Text>
                             </TouchableOpacity>                    
-                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterLimitDate("10/12/2024")}>
+                            <TouchableOpacity style={styles.filterButton} onPress={() => handleFilterLimitDate()}>
                                 <Text style={styles.filterButtonText}>Fecha límite</Text>
                             </TouchableOpacity>                    
                         </View>
