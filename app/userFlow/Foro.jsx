@@ -4,69 +4,81 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import NavBarDisplay from '../../components/navbarDisplay';
 import { useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { router, useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
+import { Alert } from 'react-native';
+import axios from 'axios';
+import { formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function Forum() {
     const [forums, setForums] = useState([]);
+    const router = useRouter();
 
-    const forumPosts = [
-        {
-            id: 1,
-            title: "Soluciones completas de exámenes bancarios",
-            user: "Vinnu Kumar",
-            time: "Hace 3 horas",
-            description: "Mientras se produce la mayor parte de la documentación...",
-            comments: 235,
-        },
-        {
-            id: 2,
-            title: "¿Cómo resuelvo preguntas de razonamiento lógico?",
-            user: "Vinnu Kumar",
-            time: "Hace 3 horas",
-            description: "Las etapas de implementación de este tipo de problemas...",
-            comments: 180,
-        }
-    ];
+    function formatRelativeTime(dateString) {
+        const date = new Date(dateString);
+        return formatDistanceToNow(date, { addSuffix: true, locale: es });
+    }
+
+    const handleInsertForum = () => {
+        router.push('/userFlow/CrearForo/crear');
+    }
+
+    const handleGetPost = (foroID) => {
+        router.push(`/userFlow/VerForo/${foroID}`);
+    }
+    
+
+    useFocusEffect(
+        useCallback(() => {
+            const handleGetForums = async () => {
+                const storedUrl = await AsyncStorage.getItem('API_URL');
+                try{
+                    const response = await axios.get(`${storedUrl}/forums`);
+                    setForums(response.data);
+                }catch(error) {
+                    Alert.alert('Error', 'Algo ha salido mal');
+                }
+            }
+
+            handleGetForums();
+        }, [])
+    )
 
     return (
         <ScrollView style={styles.container}>
             <NavBarDisplay/>
-            <View style={styles.header}>
+            <TouchableOpacity style={styles.header} onPress={handleInsertForum}>
                 <Ionicons name="create-outline" size={24} color="#0B538A" />
-                <TextInput
-                    style={styles.startDiscussionInput}
-                    placeholder="Iniciar una discusión"
-                    placeholderTextColor="#666"
-                />
-            </View>
+                <Text style={styles.startDiscussionInput}>Iniciar una discusión</Text>
+            </TouchableOpacity>
             <View style={styles.filterContainer}>
                 <Text style={styles.filterText}>Foros</Text>
             </View>
-            {forumPosts.map((post) => (
-                <View key={post.id} style={styles.postContainer}>
-                    <Text style={styles.postTitle}>{post.title}</Text>
+            {forums.map((post) => (
+                <TouchableOpacity key={post.ForumID} style={styles.postContainer} onPress={() => handleGetPost(post.ForumID)}>
+                    <View style={styles.tagContainer}>
+                        <Text style={styles.tagText}>{post.Subject}</Text>
+                    </View>
+                    <Text style={styles.postTitle}>{post.Title}</Text>
                     <View style={styles.userInfoContainer}>
                         <Image
                             style={styles.avatar}
                             source={{ uri: 'https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png-1-286x300.jpg' }}
                         />
                         <View>
-                            <Text style={styles.userName}>{post.user}</Text>
-                            <Text style={styles.timeText}>{post.time}</Text>
+                            <Text style={styles.userName}>{post.FirstName} {post.LastName}</Text>
+                            <Text style={styles.timeText}>{formatRelativeTime(post.Date)}</Text>
                         </View>
                     </View>
-                    <Text style={styles.description}>{post.description}</Text>
+                    <Text style={styles.description}>{post.Description}</Text>
                     <View style={styles.actionContainer}>
                         <TouchableOpacity style={styles.commentButton}>
                             <Ionicons name="chatbubble-outline" size={18} color="#666" />
-                            <Text style={styles.commentText}>{post.comments}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Ionicons name="star-outline" size={18} color="#666" />
+                            <Text style={styles.commentText}>{post.CommentCount}</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </TouchableOpacity>
             ))}
         </ScrollView>
     );
@@ -97,16 +109,13 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         color: '#333',
         flex: 1,
+        fontFamily: 'SpaceGrotesk',
     },
     filterContainer: {
         marginBottom: 10,
         borderBottomWidth: 1,
         borderColor: '#ddd',
         paddingBottom: 5,
-    },
-    filterText: {
-        fontSize: 14,
-        color: '#666',
     },
     postContainer: {
         backgroundColor: '#f4f6fc',
@@ -127,13 +136,9 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         marginBottom: 8,
     },
-    tagText: {
-        color: '#ffffff',
-        fontSize: 12,
-    },
     postTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: 20,
+        fontFamily: 'SpaceGroteskBold',
         color: '#04233B',
         marginBottom: 8,
     },
@@ -151,16 +156,18 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 14,
         color: '#04233B',
-        fontWeight: 'bold',
+        fontFamily: 'SpaceGroteskBold',
     },
     timeText: {
         fontSize: 12,
         color: '#999',
+        fontFamily: 'SpaceGrotesk',
     },
     description: {
         fontSize: 14,
         color: '#333',
         marginBottom: 10,
+        fontFamily: 'SpaceGrotesk',
     },
     actionContainer: {
         flexDirection: 'row',
@@ -177,5 +184,27 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         color: '#666',
         fontSize: 14,
-    }
+        fontFamily: 'SpaceGrotesk',
+    },
+    filterText: {
+        fontSize: 14,
+        fontFamily: 'SpaceGrotesk',
+    },
+    tagContainer: {
+        backgroundColor: '#1C7690',
+        paddingVertical: 3,
+        paddingHorizontal: 10,
+        borderRadius: 15,
+        alignSelf: 'flex-start',
+        marginBottom: 8,
+        alignContent: 'center',
+        textAlign: 'center',
+        alignItems: 'center',
+    },
+    tagText: {
+        color: '#ffffff',
+        fontSize: 12,
+        fontFamily: 'SpaceGrotesk',
+        padding: 2,
+    },
 });
