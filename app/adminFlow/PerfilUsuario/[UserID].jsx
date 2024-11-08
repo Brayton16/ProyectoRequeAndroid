@@ -29,7 +29,7 @@ export default function Profile() {
 
     const handlePasswordSubmit = async () => {
         const pass = password;
-        const id = await AsyncStorage.getItem('userID');
+        const id = UserID;
         const parsedUserID = parseInt(id, 10);
         const storedUrl = await AsyncStorage.getItem('API_URL');
         const url = `${storedUrl}/users/password`;
@@ -37,7 +37,6 @@ export default function Profile() {
             const response = await axios.put(url, 
                 { UserID: parsedUserID, NewPassword: pass },
             );
-            handleGetUserData();
             setPassword('');
             setContraseñaModalVisible(false);
         }catch (error) {
@@ -46,22 +45,24 @@ export default function Profile() {
     };
 
     const handleRolSubmit = async() => {
-        const newRol = rol;
-        const id = await AsyncStorage.getItem('userID');
+        const id = UserID;
         const parsedUserID = parseInt(id, 10);
+        const newRol = rol;
         const storedUrl = await AsyncStorage.getItem('API_URL');
         const url = `${storedUrl}/users/rol`;
         try {
             const response = await axios.put(url, 
                 { UserID: parsedUserID, NewRol: newRol },
             );
-            handleGetUserData();
             setRol('');
+            handleGetUserData();
             setModalRolVisible(false);
+
         }catch (error) {
-            console.error('Error al actualizar el saldo:', error);
+            console.error('Error al actualizar el Rol:', error);
         }
     };
+
     const handleDesactivarSubmit = async() => {
         const id = UserID;
         const parsedUserID = parseInt(id, 10);
@@ -100,34 +101,33 @@ export default function Profile() {
         ProfilePhoto: 'https://scontent.fsjo10-1.fna.fbcdn.net/v/t39.30808-1/447462029_7509873185757609_8697984359719734285_n.jpg?stp=dst-jpg_s200x200&_nc_cat=111&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=nfAnNnqcq2kQ7kNvgHJRClu&_nc_zt=24&_nc_ht=scontent.fsjo10-1.fna&_nc_gid=AW1gDXCqQuhoYZWQBUFzfYU&oh=00_AYDGDgTp6qbD8zQBJDTBwOFOEXkZfa0rVn0YZE9-nmMQuQ&oe=672B9487'
     }
 
+    const handleGetUserData = async () => {
+        const id = UserID;
+        const parsedUserID = parseInt(id, 10);
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const animations = [animation1, animation2, animation3];
+        const randomIndex = Math.floor(Math.random() * animations.length);
+        setLoadingAnimation(animations[randomIndex]);
+        try {
+            const response = await axios.get(`${storedUrl}/users/id`, {
+                params: { userID: parsedUserID }
+            });
+    
+            if (response.status === 200) {
+                setUserData(response.data[0]);
+            } else {
+                Alert.alert('Error', 'No se han podido recibir los proyectos');
+            }
+            setLoaded(true)
+        } catch (error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.error(error);
+        } 
+    };
+
     useFocusEffect(   
         useCallback(() => {
-            const handleGetUserData = async () => {
-                const id = UserID;
-                const parsedUserID = parseInt(id, 10);
-                const storedUrl = await AsyncStorage.getItem('API_URL');
-                const animations = [animation1, animation2, animation3];
-                const randomIndex = Math.floor(Math.random() * animations.length);
-                setLoadingAnimation(animations[randomIndex]);
-                try {
-                    const response = await axios.get(`${storedUrl}/users/id`, {
-                        params: { userID: parsedUserID }
-                    });
-            
-                    if (response.status === 200) {
-                        setUserData(response.data[0]);
-                    } else {
-                        Alert.alert('Error', 'No se han podido recibir los proyectos');
-                    }
-                    setLoaded(true)
-                } catch (error) {
-                    Alert.alert('Error', 'Algo ha salido mal');
-                    console.error(error);
-                } 
-            };
-
             handleGetUserData();
-
             return () => {
                 setLoaded(false); // Resetea el estado de carga si vuelves a salir
             };

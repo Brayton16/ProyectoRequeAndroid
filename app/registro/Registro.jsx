@@ -27,8 +27,6 @@ export default function Registro(){
         }
     };
     
-    // Llama a la función de generación de imagen
-    generateImage("Retrato de una persona usando IA basado en el nombre del usuario");
     const handleRegister = async () => {
         try {
             const storedUrl = await AsyncStorage.getItem('API_URL');

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { router, Stack } from "expo-router";
 import NavBarDisplay from '../../components/navbarDisplay';
-import axios from "axios";
+import axios, { Axios } from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
@@ -21,6 +21,22 @@ function ProjectCard({ project }) {
     const handleDonations = (proyectID) => {
         router.push(`/userFlow/DonacionesProyecto/${proyectID}`);
     };
+    const handleDelete = async () => {
+        const projectID = project.ProjectID;
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        try{
+            const response = axios.delete(`${storedUrl}/proyecto/?id=${projectID}`)
+            if((await response).status === 200){
+                Alert.alert('Proyecto eliminado correctamente!');
+            }
+            if((await response).status === 201){
+                Alert.alert('Exito','Proyecto eliminado correctamente!');
+            }
+        }catch(err){
+            console.log(err);
+        }
+    };
+    
 
     useEffect(() => {
         getImage()
@@ -71,6 +87,9 @@ function ProjectCard({ project }) {
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText} onPress={() => handleDonations(project.ProjectID)}>Donaciones</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button}>
+                    <Text style={styles.buttonText} onPress={() => handleDelete(project.ProjectID)}>Borrar proyecto</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText} onPress={() => handleEdit(project.ProjectID)}>Editar</Text>
@@ -425,7 +444,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: '#F75657',
         paddingVertical: 10,
-        paddingHorizontal: 20,
+        paddingHorizontal: 15,
         borderRadius: 50,
     },
     buttonText: {
