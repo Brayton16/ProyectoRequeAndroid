@@ -369,6 +369,34 @@ export const addUserArea = async (req, res) =>{
     }
 }
 
+export const addUserRol = async (req, res) =>{
+    console.log(req.body)
+    const {UserID, NewRol} = req.body;
+
+    // se verifica si algun campo requerido no se ingreso
+    if (
+        UserID == null || NewRol == null
+    ) {
+        return res.status(400).json({ msg: "Error: Informacion incompleta" });
+    }
+
+    try {
+        const pool = await getConnection();
+ 
+        const result = await pool
+        .request()
+        .input("UserID", sql.Int, UserID)
+        .input("NewRole", sql.VarChar, NewRol)
+        .execute('UpdateUserRole');
+
+        res.json("Rol actualizado");
+
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+}
+
 
 export const makeDonation = async (req, res) =>{
     console.log(req.body)
