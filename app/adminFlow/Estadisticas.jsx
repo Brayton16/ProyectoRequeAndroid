@@ -1,25 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Stack } from "expo-router";
 import axios from 'axios';
 import NavBarDisplay from '../../components/navbarDisplay';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { Alert } from 'react-native';
 function Estadisticas() {
-    const [estadisticas, setEstadisticas] = useState({
-        usuarios: { total: 0, ultimoMes: 0 },
-        donaciones: { total: 0, ultimoMes: 0 },
-        proyectos: { total: 0, ultimoMes: 0 },
-        publicaciones: { total: 0, ultimoMes: 0 }
-    });
+    const [projectCount, setProjectCount] = useState(0);
+    const [userCount, setUserCount] = useState(0);
+    const [donationCount, setDonationCount] = useState(0);
 
     useEffect(() => {
         const obtenerEstadisticas = async () => {
             const storedUrl = await AsyncStorage.getItem('API_URL');
             try {
-                const response = await axios.get(`${storedUrl}/estadisticas`);
+                const response = await axios.get(`${storedUrl}/proyecto/active/count`);
                 if (response.status === 200) {
-                    setEstadisticas(response.data);
+                    setProjectCount(response.data.activeProjectCount);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir las estadísticas');
+                }
+                const response2 = await axios.get(`${storedUrl}/users/activate/count`);
+                if (response.status === 200) {
+                    setUserCount(response2.data.activeUserCount);
+                } else {
+                    Alert.alert('Error', 'No se han podido recibir las estadísticas');
+                }
+                const response3 = await axios.get(`${storedUrl}/users/donation/count`);
+                if (response.status === 200) {
+                    setDonationCount(response3.data.donationsCount);
                 } else {
                     Alert.alert('Error', 'No se han podido recibir las estadísticas');
                 }
@@ -37,26 +46,19 @@ function Estadisticas() {
             <View style={styles.contentContainer}>
                 <NavBarDisplay />
                 <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+                    <Text style={styles.headerText}>Estadísticas Generales</Text>
                     <View style={styles.statsContainer}>
                         <View style={styles.statsBox}>
                             <Text style={styles.statsTitle}>Usuarios</Text>
-                            <Text style={styles.statsNumber}>{estadisticas.usuarios.total}</Text>
-                            <Text style={styles.statsSubtitle}>Último mes: {estadisticas.usuarios.ultimoMes}</Text>
+                            <Text style={styles.statsNumber}>{userCount}</Text>
                         </View>
                         <View style={styles.statsBox}>
                             <Text style={styles.statsTitle}>Donaciones</Text>
-                            <Text style={styles.statsNumber}>{estadisticas.donaciones.total}</Text>
-                            <Text style={styles.statsSubtitle}>Último mes: {estadisticas.donaciones.ultimoMes}</Text>
+                            <Text style={styles.statsNumber}>{donationCount}</Text>
                         </View>
                         <View style={styles.statsBox}>
                             <Text style={styles.statsTitle}>Proyectos</Text>
-                            <Text style={styles.statsNumber}>{estadisticas.proyectos.total}</Text>
-                            <Text style={styles.statsSubtitle}>Último mes: {estadisticas.proyectos.ultimoMes}</Text>
-                        </View>
-                        <View style={styles.statsBox}>
-                            <Text style={styles.statsTitle}>Publicaciones</Text>
-                            <Text style={styles.statsNumber}>{estadisticas.publicaciones.total}</Text>
-                            <Text style={styles.statsSubtitle}>Último mes: {estadisticas.publicaciones.ultimoMes}</Text>
+                            <Text style={styles.statsNumber}>{projectCount}</Text>
                         </View>
                     </View>
                 </ScrollView>
@@ -68,53 +70,54 @@ function Estadisticas() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#f4f6fc',
     },
     contentContainer: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fcfcfc',
     },
     scrollView: {
-        marginTop: 80,
-        marginHorizontal: 30
+        width: '100%',
+        paddingHorizontal: 20,
+        marginTop: 70,
+    },
+    headerText: {
+        fontSize: 28,
+        fontFamily: 'SpaceGroteskBold',
+        color: '#04233B',
+        textAlign: 'center',
+        marginTop: 20,
+        marginBottom: 10,
     },
     statsContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        marginBottom: 20
+        marginTop: 10,
+        marginBottom: 20,
     },
     statsBox: {
-        width: '45%',
+        width: '100%',
         backgroundColor: '#ffffff',
-        borderRadius: 10,
-        padding: 15,
-        marginVertical: 10,
+        borderRadius: 12,
+        paddingVertical: 25,
+        paddingHorizontal: 20,
+        marginBottom: 15,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 5,
-        elevation: 3,
+        elevation: 4,
+        alignItems: 'center',
     },
     statsTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontFamily: 'SpaceGrotesk',
+        color: '#667085',
         marginBottom: 5,
-        color: '#04233B',
     },
     statsNumber: {
-        fontSize: 24,
-        fontFamily: 'SpaceGrotesk',
-        marginBottom: 5,
+        fontSize: 32,
+        fontFamily: 'SpaceGroteskBold',
         color: '#04233B',
     },
-    statsSubtitle: {
-        fontSize: 14,
-        fontFamily: 'SpaceGrotesk',
-        color: '#666',
-    }
 });
 
 export default Estadisticas;

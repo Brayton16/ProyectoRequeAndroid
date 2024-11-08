@@ -12,6 +12,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import LottieView from 'lottie-react-native';
 
+//TODO: Implmenentar promedio de estrallas en cada proyecto
+
 function ProjectCard({ project }) {
     const router = useRouter();
     const [image, setImage] = useState('https://media.gettyimages.com/id/1226328537/es/vector/soporte-de-posici%C3%B3n-de-imagen-con-un-icono-de-c%C3%A1mara-gris.jpg?s=612x612&w=0&k=20&c=8igCt_oe2wE-aP0qExUDfwicSNUCb4Ho9DiKCq0rSaA=')
@@ -357,11 +359,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    avatarImage: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 50,
-    },
+    
     headerTextContainer: {
         marginLeft: 10,
     },

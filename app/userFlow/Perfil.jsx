@@ -21,6 +21,7 @@ export default function Profile() {
     const [modalTelefonoVisible, setTelefonoModalVisible] = useState(false);
     const [modalAreaVisible, setModalAreaVisible] = useState(false);
     const [modalSaldoVisible, setModalSaldoVisible] = useState(false);
+    const [modalBorrarCuenta, setModalBorrarCuenta] = useState(false);
     const [correo, setCorreo] = useState('')
     const [password, setPassword] = useState('')
     const [telefono, setTelefono] = useState('')
@@ -117,6 +118,25 @@ export default function Profile() {
             handleGetUserData();
             setSaldo('');
             setModalSaldoVisible(false)
+        }catch (error) {
+            console.error('Error al actualizar el saldo:', error);
+        }
+    };
+
+    const handleBorrarCuenta = async () => {
+        const id = await AsyncStorage.getItem('userID');
+        const parsedUserID = parseInt(id, 10);
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const url = `${storedUrl}/users/activate`;
+        try {
+            const response = await axios.put(url,
+                { 
+                    UserID: parsedUserID,
+                    IsActive: userData.IsActive
+                },
+            );
+            Alert.alert('Cuenta borrada', 'La cuenta ha sido borrada.');
+            setModalBorrarCuenta(false);
         }catch (error) {
             console.error('Error al actualizar el saldo:', error);
         }
@@ -343,6 +363,24 @@ export default function Profile() {
                             </View>
                         </View>
                     </Modal>
+                    <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={modalBorrarCuenta}
+                        onRequestClose={() => setModalBorrarCuenta(false)}
+                    >
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>¿Está seguro de que desea borrar la cuenta?</Text>
+                                <TouchableOpacity style={styles.submitButton} onPress={handleBorrarCuenta}>
+                                    <Text style={styles.submitButtonText}>Borrar cuenta</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.cancelButton} onPress={() => setModalBorrarCuenta(false)}>
+                                    <Text style={styles.cancelButtonText}>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
                 </ScrollView>
             ):(
                 <View style={styles.loadingContainer}>
@@ -437,6 +475,7 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center',
+        marginBottom: 10,
     },
     buttonText: {
         color: '#ffffff',
@@ -480,6 +519,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: 'SpaceGroteskBold',
         marginBottom: 15,
+        textAlign: 'center',
     },
     cancelButtonText: {
         color: '#ffffff',
