@@ -7,7 +7,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import axios from 'axios';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, set } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
@@ -21,23 +21,30 @@ export default function ForumPostView() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [CommentCount, setCommentCount] = useState(0);
-
     const [replies, setReplies] = useState(2);
-    const [comment, setComment] = useState('');
-    const [comments, setComments] = useState([
-        { id: 1, user: 'John Doe', text: 'This is very helpful, thank you!' },
-        { id: 2, user: 'Jane Smith', text: 'I have a similar question regarding this topic.' },
-    ]);
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComent] = useState('');
     const { foroID } = useLocalSearchParams();
 
-    const handleLike = () => {
-        setLikes(likes + 1);
-    };
-
-    const handleReply = () => {
-        if (comment.trim()) {
-            setComments([...comments, { id: comments.length + 1, user: 'You', text: comment }]);
-            setComment('');
+    const handleReply = async () => {
+        if(!newComment) {
+            Alert.alert('Error', 'No puedes dejar el comentario vacío');
+            return;
+        }
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        const storedID = await AsyncStorage.getItem('userID');
+        try{
+            const response = await axios.post(`${storedUrl}/forums/comments`,{
+                    forumID: foroID,
+                    userID: storedID,
+                    text: newComment,
+                    isAnswer: 0
+                });
+            setNewComent('');
+            handleGetForum();
+            getComments(foroID) 
+        }catch(error) {
+            Alert.alert('Error', 'Algo ha salido mal');
         }
     };
 
@@ -50,35 +57,35 @@ export default function ForumPostView() {
         const storedUrl = await AsyncStorage.getItem('API_URL');
         try{
             const response = await axios.get(`${storedUrl}/forums/comments?forumID=${foroID}`);
-            console.log(response.data);
-            //setComments(response.data);
+            setComments(response.data);
         }catch(error) {
             Alert.alert('Error', 'Algo ha salido mal');
             console.log(error);
         }
     }
+
+    const handleGetForum = async () => {
+        const foro = foroID
+        const storedUrl = await AsyncStorage.getItem('API_URL');
+        try{
+            const response = await axios.get(`${storedUrl}/forums/id?forumID=${foro}`);
+            console.log(response.data[0]);
+            setTitle(response.data[0].Title);
+            setDescription(response.data[0].Description);
+            setFirstName(response.data[0].FirstName);
+            setLastName(response.data[0].LastName);
+            setSubject(response.data[0].Subject);
+            setDate(formatRelativeTime(response.data[0].Date));
+            setCommentCount(response.data[0].CommentCount);
+            getComments(foroID);
+        }catch(error) {
+            Alert.alert('Error', 'Algo ha salido mal');
+            console.log(error);
+        }
+    }
+
     useFocusEffect(
         useCallback(() => {
-            const handleGetForum = async () => {
-                const foro = foroID
-                const storedUrl = await AsyncStorage.getItem('API_URL');
-                try{
-                    const response = await axios.get(`${storedUrl}/forums/id?forumID=${foro}`);
-                    console.log(response.data[0]);
-                    //setForum(response.data[0]);
-                    setTitle(response.data[0].Title);
-                    setDescription(response.data[0].Description);
-                    setFirstName(response.data[0].FirstName);
-                    setLastName(response.data[0].LastName);
-                    setSubject(response.data[0].Subject);
-                    setDate(responseponse.data[0].Date);
-                    setCommentCount(response.data[0].CommentCount);
-                    getComments(foroID);
-                }catch(error) {
-                    Alert.alert('Error', 'Algo ha salido mal');
-                    console.log(error);
-                }
-            }
             handleGetForum();
         }, [foroID])
     )
@@ -98,12 +105,12 @@ export default function ForumPostView() {
                     <Image source={{ uri: 'https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png-1-286x300.jpg' }} style={styles.userImage} />
                     <View>
                         <Text style={styles.userName}>{FirstName} {LastName}</Text>
-                        {/* <Text style={styles.postInfo}>{formatRelativeTime(date)}</Text> */}
+                        <Text style={styles.postInfo}>{date}</Text>
                     </View>
                 </View>
 
                 <Text style={styles.content}>
-                    {forum.Description}
+                    {description}
                 </Text>
 
                 <View style={styles.interactionContainer}>
@@ -117,9 +124,9 @@ export default function ForumPostView() {
 
                 <Text style={styles.commentsTitle}>Comments</Text>
                 {comments.map((comment) => (
-                    <View key={comment.id} style={styles.comment}>
-                        <Text style={styles.commentUser}>{comment.user}</Text>
-                        <Text style={styles.commentText}>{comment.text}</Text>
+                    <View key={comment.CommentIDs} style={styles.comment}>
+                        <Text style={styles.commentUser}>{comment.FirstName} {comment.LastName}</Text>
+                        <Text style={styles.commentText}>{comment.Text}</Text>
                     </View>
                 ))}
 
@@ -127,8 +134,8 @@ export default function ForumPostView() {
                     <TextInput
                         style={styles.commentInput}
                         placeholder="Reply to join the discussion..."
-                        value={comment}
-                        onChangeText={setComment}
+                        value={newComment}
+                        onChangeText={setNewComent}
                     />
                     <TouchableOpacity onPress={handleReply}>
                         <Ionicons name="send" size={24} color="#1E90FF" />
