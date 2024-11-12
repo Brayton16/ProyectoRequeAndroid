@@ -441,14 +441,14 @@ export const makeDonation = async (req, res) =>{
             });
         }
         
-        /*
+        
         await emailService.sendGratitudeEmail({donorFirstName, donorEmail});
         await emailService.sendDonationEmail({  
                                                 ownerFirstName, ownerEmail, ownerProjectName, 
                                                 amount, donorFirstName, donorLastName, 
                                                 donorPhoneNumber, donorEmail
                                             });
-        */
+        
         
         return res.status(201).json({
             msg: "Donación exitosa",
